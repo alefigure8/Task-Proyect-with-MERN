@@ -2,11 +2,10 @@ import express from 'express';
 import contectarDB from './config/db.js'
 import dotenv from 'dotenv';
 
-const app = express();
-dotenv.config()
-
 /* init */
+const app = express();
 app.set('PORT', process.env.PORT || 8080);
+dotenv.config()
 contectarDB()
 
 app.get('/', (req, res)=>{
