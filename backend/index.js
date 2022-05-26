@@ -1,9 +1,13 @@
 import express from 'express';
 import contectarDB from './config/db.js'
+import dotenv from 'dotenv';
+
 const app = express();
+dotenv.config()
 
 /* init */
 app.set('PORT', process.env.PORT || 8080);
+contectarDB()
 
 app.get('/', (req, res)=>{
   res.send('Hello world!');

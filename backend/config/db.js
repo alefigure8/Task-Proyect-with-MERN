@@ -1,8 +1,8 @@
-import mongoose, { connect } from 'mongoose';
+import mongoose from 'mongoose';
 
 const contectarDB = async () => {
   try {
-      const connection = await mongoose.connect('mongodb+srv://root:pago7611@cluster0.pdkml.mongodb.net/uptask?retryWrites=true&w=majority', {
+      const connection = await mongoose.connect(process.env.URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true
       });
