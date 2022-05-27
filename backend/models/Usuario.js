@@ -32,7 +32,7 @@ const usuarioSchema = mongoose.Schema({
 
 /* Hashing password */
 usuarioSchema.pre('save', async function (next){
-  if(!this.modified('password')){
+  if(!this.isModified('password')){
     next();
   }
   const salt = await bcrypt.genSalt(10);

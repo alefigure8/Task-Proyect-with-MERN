@@ -1,4 +1,4 @@
-import User from '../container/usersContainer.js'
+import User from '../container/usersContainer.js';
 
 /* Init Class */
 const usuario = new User()
@@ -6,7 +6,7 @@ const usuario = new User()
 
 /* register User */
 const registerUser = async (req, res) => {
-  
+
   const duplicateUser = await usuario.duplicate(req.body); // Check if user alredy exist
 
   if(duplicateUser){
