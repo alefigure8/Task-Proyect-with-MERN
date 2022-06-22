@@ -15,6 +15,12 @@ class Users {
     return existUSer;
   }
 
+  async autenticate(data){
+    const {email, password} = data;
+    const user = await Usuario.findOne({ email });
+    return user;
+  }
+
 }
 
 export default Users;

@@ -23,6 +23,13 @@ const registerUser = async (req, res) => {
 
 }
 
+/* autenticate users */
+const autenticateUser = async (req, res) => {
+  const userData = await usuario.autenticate(req.body); // check if user exist
+  console.log(userData);
+}
+
 export {
-  registerUser
+  registerUser,
+  autenticateUser
 };
