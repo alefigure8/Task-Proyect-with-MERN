@@ -7,7 +7,7 @@ const usuario = new User()
 /* register User */
 const registerUser = async (req, res) => {
 
-  const duplicateUser = await usuario.duplicate(req.body); 
+  const duplicateUser = await usuario.duplicate(req.body);
 
   // Check if user alredy exist
   if(duplicateUser){
@@ -17,13 +17,13 @@ const registerUser = async (req, res) => {
 
   // save user
   try {
-    const UserData = await usuario.saveUser(req.body); 
+    const UserData = await usuario.saveUser(req.body);
     res.json(UserData);
   } catch (err){
     console.log(`Error: ${err.messagge}`);
   }
-
 }
+
 
 /* autenticate users */
 const autenticateUser = async (req, res) => {
@@ -43,17 +43,30 @@ const autenticateUser = async (req, res) => {
 
   // check if password is correct
   const compareData = await usuario.comparePassword(userData, req.body.password);
-  
+
   if(compareData){
     return res.json(compareData);
   } else {
     const error = new Error('Password is incorrect')
     return res.status(404).json({msg: error.message})
   }
+}
+
+/* Confirm User by email */
+const confirm = async (req, res) => {
+  const token = req.params.token;
+  const userConfirmed =  await usuario.confirmToken(token)
+
+  if(userConfirmed){
+    return res.json({userConfirmed})
+  } else {
+    return res.json({msg: 'Token is incorrect'})
+  }
 
 }
 
 export {
   registerUser,
-  autenticateUser
+  autenticateUser,
+  confirm
 };
