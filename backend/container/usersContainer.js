@@ -11,14 +11,30 @@ class Users {
 
   async duplicate(data){
     const {email} = data;
-    const existUSer = await Usuario.findOne({ email });
-    return existUSer;
+    const existUser = await Usuario.findOne({ email });
+    return existUser;
   }
 
   async autenticate(data){
     const {email, password} = data;
     const user = await Usuario.findOne({ email });
     return user;
+  }
+
+  async comparePassword(data, password){
+
+    const compare = await data.comparePassword(password)
+
+    if(compare){
+      return {
+        _id: data._id,
+        name: data.name,
+        email: data.email
+      }
+    }
+
+    return false;
+
   }
 
 }
