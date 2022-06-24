@@ -10,16 +10,10 @@ class Users {
     return userSave;
   }
 
-  async duplicate(data){
+  async searchUserbyMail(data){
     const {email} = data;
     const existUser = await Usuario.findOne({ email });
     return existUser;
-  }
-
-  async autenticate(data){
-    const {email} = data;
-    const user = await Usuario.findOne({ email });
-    return user;
   }
 
   async comparePassword(data, password){
@@ -45,7 +39,31 @@ class Users {
       const userConfirmed = await user.save();
       return userConfirmed;
     }
-    
+
+    return false;
+  }
+
+  async generateToken(email){
+    const user = await Usuario.findOne({ email });
+    if(user){
+      user.token = generateId();
+      const userForgot = await user.save();
+      return userForgot;
+    }
+
+    return false;
+  }
+
+  async resetPassword(data){
+    const {token, password} = data;
+    const user = await Usuario.findOne({ token });
+    if(user){
+      user.password = password;
+      user.token = '';
+      const userReset = await user.save();
+      return userReset;
+    }
+
     return false;
   }
 

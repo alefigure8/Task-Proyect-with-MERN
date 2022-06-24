@@ -7,7 +7,7 @@ const usuario = new User()
 /* register User */
 const registerUser = async (req, res) => {
 
-  const duplicateUser = await usuario.duplicate(req.body);
+  const duplicateUser = await usuario.searchUserbyMail(req.body);
 
   // Check if user alredy exist
   if(duplicateUser){
@@ -27,7 +27,7 @@ const registerUser = async (req, res) => {
 
 /* autenticate users */
 const autenticateUser = async (req, res) => {
-  const userData = await usuario.autenticate(req.body);
+  const userData = await usuario.searchUserbyMail(req.body);
 
   // check if user does not exist
   if(!userData){
@@ -52,21 +52,69 @@ const autenticateUser = async (req, res) => {
   }
 }
 
+
 /* Confirm User by email */
 const confirm = async (req, res) => {
   const token = req.params.token;
   const userConfirmed =  await usuario.confirmToken(token)
 
   if(userConfirmed){
-    return res.json({userConfirmed})
+    return res.json({msg: 'Your account is confirmed'})
   } else {
     return res.json({msg: 'Token is incorrect'})
   }
 
 }
 
+
+/* Forgot password. Gnerate a new token */
+const forgotPassword = async (req, res) => {
+  const {email} = req.body;
+  const user = await usuario.searchUserbyMail({email});
+
+  if(!user){
+    const error = new Error('User does not exist')
+    return res.status(404).json({msg: error.message})
+  }
+
+  try {
+    const generateNewToken = await usuario.generateToken(email)
+
+    if(generateNewToken){
+      res.json({msg: 'We have sent you an email with a link to reset your password'});
+    } else {
+      const error = new Error('Error generating token')
+      return res.status(404).json({msg: error.message})
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/* Reset password*/
+const resetPassword = async (req, res) => {
+  try {
+    const token = req.params.token;
+    const {password} = req.body;
+
+    const newPasswordGenerated = await usuario.resetPassword({token, password});
+
+    if(newPasswordGenerated){
+      res.json({msg: 'Your password has been changed'});
+    } else {
+      const error = new Error('Token is incorrect')
+      return res.status(404).json({msg: error.message})
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
 export {
   registerUser,
   autenticateUser,
-  confirm
+  confirm,
+  forgotPassword,
+  resetPassword
 };
