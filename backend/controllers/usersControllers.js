@@ -43,7 +43,6 @@ const autenticateUser = async (req, res) => {
 
   // check if password is correct
   const compareData = await usuario.comparePassword(userData, req.body.password);
-
   if(compareData){
     return res.json(compareData);
   } else {
@@ -91,6 +90,7 @@ const forgotPassword = async (req, res) => {
   }
 }
 
+
 /* Reset password*/
 const resetPassword = async (req, res) => {
   try {
@@ -111,10 +111,18 @@ const resetPassword = async (req, res) => {
 }
 
 
+/* Perfil del usuario */
+const perfil = async (req, res) => {
+  const user = req.user;
+  res.json(user);
+}
+
+
 export {
   registerUser,
   autenticateUser,
   confirm,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  perfil
 };
