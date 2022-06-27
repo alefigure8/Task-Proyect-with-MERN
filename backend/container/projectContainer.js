@@ -8,6 +8,16 @@ class Projects {
     return projectSaved;
   }
 
+  async getProject(projectId) {
+    const project = await Project.findById({_id: projectId});
+    return project;
+  }
+
+  async getProjectByUser(userId) {
+    const project = await Project.find({ createdBy: userId });
+    return project;
+  }
+
 }
 
 export default Projects;
