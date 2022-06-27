@@ -73,7 +73,21 @@ const editProject = async (req, res) => {
   }
 }
 
-const deleteProject = (req, res) => {
+const deleteProject = async (req, res) => {
+  const userId = req.user._id;
+  const projectId = req.params.id;
+  try {
+    const projectDeleted = await project.delete(projectId, userId);
+    if(projectDeleted){
+      return res.json({
+        msg: 'Project deleted',
+        data: projectDeleted
+      });
+    }
+    return res.status(400).json({ msg: 'Error deleting project' });
+  } catch (error) {
+    console.log(error);
+  }
 
 }
 

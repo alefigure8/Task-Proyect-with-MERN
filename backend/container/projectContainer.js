@@ -5,17 +5,26 @@ class Projects {
     const project = new Project(projectData);
     project.createdBy = userId;
     const projectSaved = await project.save();
-    return projectSaved;
+    if(project){
+      return projectSaved;
+    }
+    return false;
   }
 
   async getProject(projectId, userId) {
     const project = await Project.findById({_id: projectId}).where('createdBy').equals(userId);
-    return project;
+    if(project){
+      return project;
+    }
+    return false;
   }
 
   async getProjectByUser(userId) {
     const project = await Project.find({ createdBy: userId });
-    return project;
+    if(project){
+      return project;
+    }
+    return false;
   }
 
   async update(projectId, projectData, userId) {
@@ -32,6 +41,14 @@ class Projects {
     return false
   }
 
+  async delete(projectId, userId) {
+    const findProyect = await this.getProject(projectId, userId);
+    if(findProyect){
+      const projectDeleted = await findProyect.remove();
+      return projectDeleted;
+    }
+    return false
+  }
 }
 
 export default Projects;
