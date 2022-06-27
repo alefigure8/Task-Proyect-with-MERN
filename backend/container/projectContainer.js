@@ -8,14 +8,28 @@ class Projects {
     return projectSaved;
   }
 
-  async getProject(projectId) {
-    const project = await Project.findById({_id: projectId});
+  async getProject(projectId, userId) {
+    const project = await Project.findById({_id: projectId}).where('createdBy').equals(userId);
     return project;
   }
 
   async getProjectByUser(userId) {
     const project = await Project.find({ createdBy: userId });
     return project;
+  }
+
+  async update(projectId, projectData, userId) {
+    const findProyect = await this.getProject(projectId, userId);
+    if(findProyect){
+      findProyect.name = projectData.name || findProyect.name;
+      findProyect.description = projectData.description || findProyect.description;
+      findProyect.client = projectData.client || findProyect.client;
+      findProyect.startDate = projectData.startDate || findProyect.startDate;
+      const projectUpdated = await findProyect.save();
+
+      return projectUpdated;
+    }
+    return false
   }
 
 }

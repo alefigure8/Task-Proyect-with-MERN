@@ -20,7 +20,6 @@ const allProject = async (req, res) => {
 const newProject = async (req, res) => {
   const projectData = req.body;
   const userId = req.user._id;
-
   try {
     const newProject = await project.save(projectData, userId);
     if(newProject){
@@ -39,18 +38,39 @@ const newProject = async (req, res) => {
 // get project by id
 const getProject = async (req, res) => {
   const projectId = req.params.id;
-  const projectById = await project.getProject(projectId);
-  if(projectById){
-    return res.json({
-      msg: 'Project found',
-      data: projectById
-    });
+  const userId = req.user._id;
+  try {
+    const projectById = await project.getProject(projectId, userId);
+    if(projectById){
+      return res.json({
+        msg: 'Project found',
+        data: projectById
+      });
+    }
+    return res.status(400).json({ msg: 'Error finding project' });
+  } catch (error) {
+    console.log(error);
   }
-  return res.status(400).json({ msg: 'Error finding project' });
 }
 
-const editProject = (req, res) => {
+const editProject = async (req, res) => {
+  const userId = req.user._id;
+  const projectData = req.body;
+  const projectId = req.params.id;
+  try {
 
+    const projectEdited = await project.update(projectId, projectData, userId);
+    if(projectEdited){
+      return res.json({
+        msg: 'Project updated',
+        data: projectEdited
+      });
+    }
+    return res.status(400).json({ msg: 'Error updating project' });
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 const deleteProject = (req, res) => {
