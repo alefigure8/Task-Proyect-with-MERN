@@ -4,14 +4,14 @@ import checkAuth from '../middleware/checkAuth.js';
 
 const router = express.Router();
 
-router.route('/', checkAuth)
-  .get(getProjects)
-  .post(newProject);
+router.route('/')
+  .get(checkAuth, getProjects)
+  .post(checkAuth, newProject);
 
-router.route('/:id', checkAuth)
-  .get(allProject)
-  .put(editProject)
-  .delete(deleteProject);
+router.route('/:id')
+  .get(checkAuth, allProject)
+  .put(checkAuth, editProject)
+  .delete(checkAuth, deleteProject);
 
 router.get('/tasks/:id', checkAuth, getTask);
 router.post('/add-colaborator/:id', checkAuth, addColaborator);

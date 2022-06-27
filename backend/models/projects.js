@@ -8,7 +8,6 @@ const projectSchema = mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario',
-    required: true
   },
   colaborators: [
     {
