@@ -1,18 +1,18 @@
-import mongoose, { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
 
-const projectSchema = new Schema({
+const projectSchema = mongoose.Schema({
   name: {type: String, required: true, trim: true},
   description: {type: String, required: true, trim: true},
   date: {type: Date, default: Date.now},
   client: {type: String, required: true, trim: true},
   createdBy: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario',
     required: true
   },
   colaborators: [
     {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Usuario',
     }
   ]
@@ -22,5 +22,5 @@ const projectSchema = new Schema({
   }
   );
 
-  const Project = model('Project', projectSchema);
+  const Project = mongoose.model('Project', projectSchema);
   export default Project;
