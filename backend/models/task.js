@@ -20,6 +20,10 @@ const task = new mongoose.Schema({
     default: Date.now,
     required: true
   },
+  deliveryDate: {
+    type: Date,
+    required: true
+  },
   priority:{
     type: String,
     required: true,

@@ -99,7 +99,7 @@ const removeColaborator = (req, res) => {
 
 }
 
-const getTask = (req, res) => {
+const getTask = async (req, res) => {
 
 }
 

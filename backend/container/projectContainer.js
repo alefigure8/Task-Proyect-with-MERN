@@ -1,5 +1,4 @@
 import Project from '../models/projects.js';
-
 class Projects {
   async save(projectData, userId) {
     const project = new Project(projectData);
@@ -12,10 +11,18 @@ class Projects {
   }
 
   async getProject(projectId, userId) {
-    const project = await Project.findById({_id: projectId}).where('createdBy').equals(userId);
-    if(project){
+    const project = await Project.findById({_id: projectId});
+
+    // Check if project exist and if user is owner
+    if(project.createdBy.toString() === userId.toString()){
       return project;
     }
+
+    // Check if project exist and if user is collaborator
+    if(project.colaborators.includes(userId)){
+      return project;
+    }
+
     return false;
   }
 
