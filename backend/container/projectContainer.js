@@ -1,4 +1,6 @@
 import Project from '../models/projects.js';
+import Task from '../models/task.js';
+
 class Projects {
   async save(projectData, userId) {
     const project = new Project(projectData);
@@ -11,19 +13,24 @@ class Projects {
   }
 
   async getProject(projectId, userId) {
+    // search project by id
     const project = await Project.findById({_id: projectId});
 
-    // Check if project exist and if user is owner
-    if(project.createdBy.toString() === userId.toString()){
-      return project;
+    // Check if project exists
+    if(!project){
+      return false;
     }
 
-    // Check if project exist and if user is collaborator
-    if(project.colaborators.includes(userId)){
-      return project;
+    // Check if project exist and if user is owner or colaborator
+    if(project.createdBy.toString() !== userId.toString() && !project.colaborators.includes(userId)){
+      return false;
     }
 
-    return false;
+    // search task by project
+    const tasks = await Task.find({ project: projectId });
+
+    // return project and tasks
+    return { project, tasks };
   }
 
   async getProjectByUser(userId) {
@@ -56,6 +63,7 @@ class Projects {
     }
     return false
   }
+
 }
 
 export default Projects;

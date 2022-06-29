@@ -1,5 +1,5 @@
 import express from 'express';
-import { getProject, newProject, allProject, editProject, deleteProject, addColaborator, removeColaborator, getTask } from '../controllers/projectController.js';
+import { getProject, newProject, allProject, editProject, deleteProject, addColaborator, removeColaborator } from '../controllers/projectController.js';
 import checkAuth from '../middleware/checkAuth.js';
 
 const router = express.Router();
@@ -13,7 +13,6 @@ router.route('/:id')
   .put(checkAuth, editProject)
   .delete(checkAuth, deleteProject);
 
-router.get('/tasks/:id', checkAuth, getTask);
 router.post('/add-colaborator/:id', checkAuth, addColaborator);
 router.post('/delete-colaborator/:id', checkAuth, removeColaborator);
 

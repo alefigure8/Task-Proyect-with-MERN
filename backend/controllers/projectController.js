@@ -99,10 +99,6 @@ const removeColaborator = (req, res) => {
 
 }
 
-const getTask = async (req, res) => {
-
-}
-
 export {
   getProject,
   newProject,
@@ -111,5 +107,4 @@ export {
   deleteProject,
   addColaborator,
   removeColaborator,
-  getTask
 }
