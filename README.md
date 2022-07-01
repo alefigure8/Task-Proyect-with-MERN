@@ -2,7 +2,7 @@
 
 Organizador de tareas con MERN stack.
 
-# AVANCES
+## AVANCES
 
 Backend terminado (Mongo, Express, NodeJs, JWT, BcryptJs)
 Frontend recién comenzado
