@@ -1,6 +1,12 @@
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router-dom';
+import {useState} from 'react';
 
 const Register = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   return (
     <>
     <h1 className="text-sky-600 font-black text-6xl capitalize">
