@@ -1,6 +1,7 @@
 import {Link} from 'react-router-dom';
 import {useState} from 'react';
 import Alert from '../components/alert';
+import axios from 'axios';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -9,7 +10,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [alert, setAlert] = useState({});
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // empty fields
@@ -32,7 +33,20 @@ const Register = () => {
     setAlert({});
 
     // send to server
-    console.log('send to server');
+    try {
+      const {data} = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, {name, email, password});
+
+      // success message
+      setAlert({error: false, msg: data.msg});
+
+      // clear fields
+      setName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      setAlert({error: true, msg: error.response.data.msg});
+    }
   }
 
   const {msg} = alert;
@@ -44,17 +58,17 @@ const Register = () => {
       <span className="text-slate-700"> projects</span>
     </h1>
     {msg && <Alert alert={alert} />}
-    <form 
+    <form
       className="my-10 bg-white shadow rounded-lg p-10"
       onSubmit={(e) => {handleSubmit(e)}}
       >
 
       <div className="my-2">
-        <label 
+        <label
           className="Uppercase text-gray-600 block text-xl font-bold"
           htmlFor="name"
           >Name</label>
-        <input 
+        <input
           id="name"
           type="text"
           placeholder="What is your name?"
@@ -65,11 +79,11 @@ const Register = () => {
       </div>
 
       <div className="my-5">
-        <label 
+        <label
           className="Uppercase text-gray-600 block text-xl font-bold"
           htmlFor="email"
           >Email</label>
-        <input 
+        <input
           id="email"
           type="email"
           placeholder="Enter your email"
@@ -80,11 +94,11 @@ const Register = () => {
       </div>
 
       <div className="my-5">
-        <label 
+        <label
           className="Uppercase text-gray-600 block text-xl font-bold"
           htmlFor="password"
           >Password</label>
-        <input 
+        <input
           id="password"
           type="password"
           placeholder="Enter your password"
@@ -95,11 +109,11 @@ const Register = () => {
       </div>
 
       <div className="my-5">
-        <label 
+        <label
           className="Uppercase text-gray-600 block text-xl font-bold"
           htmlFor="RepeatPassword"
           >Repeat your password</label>
-        <input 
+        <input
           id="RepeatPassword"
           type="password"
           placeholder="Enter your password again"
