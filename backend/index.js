@@ -13,7 +13,7 @@ dotenv.config()
 contectarDB()
 
 // CORS
-const whiteList = ['http://localhost:3000', 'http://localhost:8080'];
+const whiteList = [process.env.FRONTEND_URL];
 const corsOptions = { origin: (origin, callback) => {
     if(whiteList.includes(origin)){
       callback(null, true);
