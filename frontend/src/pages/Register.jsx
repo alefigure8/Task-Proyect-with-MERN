@@ -1,11 +1,41 @@
 import {Link} from 'react-router-dom';
 import {useState} from 'react';
+import Alert from '../components/alert';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [alert, setAlert] = useState({});
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // empty fields
+    if([name, email, password, confirmPassword].includes('')) {
+      setAlert({error: true, msg: 'Please fill in all fields'});
+      return;
+    }
+
+    // password mismatch
+    if(password !== confirmPassword) {
+      setAlert({error: true, msg: 'Passwords do not match'});
+      return;
+    }
+
+    // password length
+    if(password.length < 6) {
+      setAlert({error: true, msg: 'Password must be at least 6 characters'});
+      return;
+    }
+    setAlert({});
+
+    // send to server
+    console.log('send to server');
+  }
+
+  const {msg} = alert;
 
   return (
     <>
@@ -13,7 +43,11 @@ const Register = () => {
       Create your account and Manage your
       <span className="text-slate-700"> projects</span>
     </h1>
-    <form action="" className="my-10 bg-white shadow rounded-lg p-10">
+    {msg && <Alert alert={alert} />}
+    <form 
+      className="my-10 bg-white shadow rounded-lg p-10"
+      onSubmit={(e) => {handleSubmit(e)}}
+      >
 
       <div className="my-2">
         <label 
@@ -25,6 +59,8 @@ const Register = () => {
           type="text"
           placeholder="What is your name?"
           className="w-full mt-3 border rounded-xl bg-gray-50 border-sky-600 p-3"
+          value={name}
+          onChange = {e => setName(e.target.value)}
         />
       </div>
 
@@ -38,6 +74,8 @@ const Register = () => {
           type="email"
           placeholder="Enter your email"
           className="w-full mt-3 border rounded-xl bg-gray-50 border-sky-600 p-3"
+          value={email}
+          onChange = {e => setEmail(e.target.value)}
         />
       </div>
 
@@ -51,6 +89,8 @@ const Register = () => {
           type="password"
           placeholder="Enter your password"
           className="w-full mt-3 border rounded-xl bg-gray-50 border-sky-600 p-3 my-3"
+          value={password}
+          onChange = {e => setPassword(e.target.value)}
         />
       </div>
 
@@ -64,6 +104,8 @@ const Register = () => {
           type="password"
           placeholder="Enter your password again"
           className="w-full mt-3 border rounded-xl bg-gray-50 border-sky-600 p-3 my-3"
+          value={confirmPassword}
+          onChange = {e => setConfirmPassword(e.target.value)}
         />
       </div>
       <input type="submit" value="Create account" className="bg-sky-700 w-full py-3 text-white uppercase font-bold rounded hover:cursor-pointer hover:bg-sky-800 transition-colors mb-5" />
