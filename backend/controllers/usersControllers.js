@@ -56,13 +56,16 @@ const autenticateUser = async (req, res) => {
 const confirm = async (req, res) => {
   const token = req.params.token;
   const userConfirmed =  await usuario.confirmToken(token)
-
-  if(userConfirmed){
-    return res.json({msg: 'Your account is confirmed'})
-  } else {
-    return res.json({msg: 'Token is incorrect'})
+  try {
+    if(userConfirmed){
+      return res.json({msg: 'Your account is confirmed'})
+    } else {
+      const error = new Error('Token is incorrect')
+      return res.status(404).json({msg: error.message})
+    }
+  } catch (err) {
+    console.log(`Error: ${err.messagge}`);
   }
-
 }
 
 
