@@ -1,12 +1,21 @@
 import Usuario from '../models/Usuario.js';
 import generateId from '../helpers/generateID.js';
 import generateJWT from '../helpers/generateJWT.js';
+import {emailRegister} from '../helpers/emails.js'
 
 class Users {
   async saveUser(data){
     const usuario = new Usuario(data);
     usuario.token = generateId();
     const userSave = await usuario.save();
+
+    // send email
+    emailRegister({
+      name: userSave.name,
+      email: userSave.email,
+      token: userSave.token
+    });
+
     return userSave;
   }
 
