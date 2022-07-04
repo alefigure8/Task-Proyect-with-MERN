@@ -17,8 +17,8 @@ const registerUser = async (req, res) => {
 
   // save user
   try {
-    const UserData = await usuario.saveUser(req.body);
-    res.json(UserData);
+    await usuario.saveUser(req.body);
+    res.json({msg: 'User created successfully'});
   } catch (err){
     console.log(`Error: ${err.messagge}`);
   }
