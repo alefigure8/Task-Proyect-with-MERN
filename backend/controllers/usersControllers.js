@@ -89,7 +89,7 @@ const forgotPassword = async (req, res) => {
       return res.status(404).json({msg: error.message})
     }
   } catch (error) {
-    console.log(error);
+    console.log(`Error: ${error.messagge}`);
   }
 }
 
@@ -109,7 +109,7 @@ const resetPassword = async (req, res) => {
       return res.status(404).json({msg: error.message})
     }
   } catch (error) {
-    console.log(error);
+    console.log(`Error: ${error.messagge}`);
   }
 }
 
