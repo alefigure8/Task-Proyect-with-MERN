@@ -1,7 +1,7 @@
 import Usuario from '../models/Usuario.js';
 import generateId from '../helpers/generateID.js';
 import generateJWT from '../helpers/generateJWT.js';
-import {emailRegister} from '../helpers/emails.js'
+import {emailRegister, emailForgot} from '../helpers/emails.js'
 
 class Users {
   async saveUser(data){
@@ -57,11 +57,19 @@ class Users {
     if(user){
       user.token = generateId();
       const userForgot = await user.save();
+
+      emailForgot({
+        name: user.name,
+        email: user.email,
+        token: user.token
+      });
+      
       return userForgot;
     }
 
     return false;
   }
+
 
   async resetPassword(data){
     const {token, password} = data;

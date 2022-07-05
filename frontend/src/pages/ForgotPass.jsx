@@ -1,13 +1,52 @@
 import {Link} from 'react-router-dom'
+import {useState} from 'react';
+import axios from 'axios';
+import Alert from '../components/Alert';
 
 const ForgotPass = () => {
+  const [email, setEmail] = useState('');
+  const [alert, setAlert] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // validation
+    if(email === '' || email.length < 6){
+      setAlert({error: true, msg: 'Please enter a valid email address'});
+      setTimeout(() => {
+        setAlert('');
+      }, 3000);
+      return;
+    }
+
+   try {
+     // send email to server
+     const url = `${import.meta.env.VITE_BACKEND_URL}/api/users/forgot`;
+     const {data}= await axios.post(url, {email});
+
+     // handle response
+    setAlert({error: false, msg: data.msg});
+
+    // clear form
+    setEmail('');
+
+   } catch (error) {
+      setAlert({error: true, msg: error.response.data.msg});
+      setTimeout(() => {
+        setAlert('');
+      }, 3000);
+   }
+
+  }
+
   return (
     <>
     <h1 className="text-sky-600 font-black text-6xl capitalize">
       Recover your access and do not lose your
       <span className="text-slate-700"> projects</span>
     </h1>
-    <form action="" className="my-10 bg-white shadow rounded-lg p-10">
+    {alert?.msg && <Alert alert={alert}/>}
+    <form onSubmit={handleSubmit} className="my-10 bg-white shadow rounded-lg p-10">
 
       <div className="my-2">
         <label 
@@ -19,6 +58,8 @@ const ForgotPass = () => {
           type="email"
           placeholder="Enter your email"
           className="w-full mt-3 border rounded-xl bg-gray-50 border-sky-600 p-3"
+          value={email}
+          onChange ={e=> setEmail(e.target.value)}
         />
       </div>
 
