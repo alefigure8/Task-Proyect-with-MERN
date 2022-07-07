@@ -3,7 +3,6 @@ import nodemailer from 'nodemailer';
 export const emailRegister = async (data) => {
   const {name, email, token} = data;
 
-  // TODO: Move to env variables
   const transport = nodemailer.createTransport({
     host: process.env.HOST,
     port: process.env.PORT,
@@ -27,7 +26,6 @@ export const emailRegister = async (data) => {
 export const emailForgot = async (data) => {
   const {name, email, token} = data;
 
-  // TODO: Move to env variables
   const transport = nodemailer.createTransport({
     host: process.env.HOST,
     port: process.env.PORT,
@@ -41,9 +39,9 @@ export const emailForgot = async (data) => {
   const info = await transport.sendMail({
     from: '"Fred Foo ??" <correo@ejemplo.com">', // sender address
     to: email, // list of receivers
-    subject: "Confirmación de registro", // Subject line
+    subject: "Restabelece tu password", // Subject line
     text: "Hola", // plain text body
-    html: `<b>Hola ${name}</b>, para confirmar tu registro haz click en el siguiente enlace: <a href="${process.env.FRONTEND_URL}/forgot-password/${token}">Confirmar</a>` // html body
+    html: `<b>Hola ${name}</b>, has solicitado cambiar tu password. Has click en el siguiente enlace para poder generar un nuevo password: <a href="${process.env.FRONTEND_URL}/forgot-password/${token}">Restablecer Password</a>` // html body
   });
 
 }
