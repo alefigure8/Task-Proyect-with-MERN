@@ -52,6 +52,14 @@ class Users {
     return false;
   }
 
+  async token(token){
+    const user = await Usuario.findOne({ token });
+    if(user){
+      return user;
+    }
+    return false;
+  }
+
   async generateToken(email){
     const user = await Usuario.findOne({ email });
     if(user){
@@ -76,6 +84,7 @@ class Users {
     const user = await Usuario.findOne({ token });
     if(user){
       user.password = password;
+      user.confirm = true;
       user.token = '';
       const userReset = await user.save();
       return userReset;

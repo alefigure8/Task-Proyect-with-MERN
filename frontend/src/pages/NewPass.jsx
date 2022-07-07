@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import axios from 'axios'
-import {useParams} from 'react-router-dom'
+import {useParams, Link} from 'react-router-dom'
 import Alert from '../components/Alert'
 let once = true;
 
@@ -16,23 +16,35 @@ const NewPass = () => {
       const confirmToken = async () => {
         try {
           const url = `${import.meta.env.VITE_BACKEND_URL}/api/users/forgot/${token}`;
-          const {data} = await axios(url);
-          setAlert({msg: data.msg, error: false})
+          await axios(url);
           setConfirm(true)
         } catch (error) {
           setAlert({msg: error.response.data.msg, error: true})
         }
       }
       confirmToken();
+      once = false;
     }
   }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(password == ''){
+      setAlert({msg: 'Password is required', error: true})
+      return;
+    }
+
+    if(password.length < 6){
+      setAlert({msg: 'Password must be at least 6 characters', error: true})
+      return;
+    }
+
     try {
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/users/forgot`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/users/forgot/${token}`;
       const {data} = await axios.post(url, {password});
       setAlert({msg: data.msg, error: false})
+      setPassword('');
     } catch (error) {
       setAlert({msg: error.response.data.msg, error: true})
     }
@@ -45,7 +57,7 @@ const NewPass = () => {
       <span className="text-slate-700"> projects</span>
     </h1>
     {alert?.msg && <Alert alert={alert}/>}
-   {confirm &&
+    {confirm && <>
       <form onSubmit={handleSubmit} className="my-10 bg-white shadow rounded-lg p-10">
       <div className="my-3">
         <label 
@@ -63,8 +75,8 @@ const NewPass = () => {
       </div>
       <input type="submit" value="Save new password" className="bg-sky-700 w-full py-3 text-white uppercase font-bold rounded hover:cursor-pointer hover:bg-sky-800 transition-colors mb-5" />
     </form>
-   }
-
+    <div className="text-center"><Link to="/login">Go to login</Link></div>
+    </>}
   </>
   )
 }

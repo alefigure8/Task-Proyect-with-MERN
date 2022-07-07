@@ -55,7 +55,7 @@ const autenticateUser = async (req, res) => {
 /* Confirm User by email */
 const confirm = async (req, res) => {
   const token = req.params.token;
-  const userConfirmed =  await usuario.confirmToken(token)
+  const userConfirmed =  await usuario.token(token)
   try {
     if(userConfirmed){
       return res.json({msg: 'Your account is confirmed'})
@@ -99,11 +99,10 @@ const resetPassword = async (req, res) => {
   try {
     const token = req.params.token;
     const {password} = req.body;
-
     const newPasswordGenerated = await usuario.resetPassword({token, password});
 
     if(newPasswordGenerated){
-      res.json({msg: 'Your password has been changed'});
+      res.json({msg: 'Your password has been changed successfully'});
     } else {
       const error = new Error('Token is incorrect')
       return res.status(404).json({msg: error.message})
