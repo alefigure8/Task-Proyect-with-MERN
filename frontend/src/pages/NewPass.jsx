@@ -1,8 +1,8 @@
 import {useState, useEffect} from 'react'
-import axios from 'axios'
 import {useParams, Link} from 'react-router-dom'
 import Alert from '../components/Alert'
 let once = true;
+import clientAxios from '../config/clientAxios';
 
 const NewPass = () => {
   const [alert, setAlert] = useState({})
@@ -16,8 +16,8 @@ const NewPass = () => {
     if(once){
       const confirmToken = async () => {
         try {
-          const url = `${import.meta.env.VITE_BACKEND_URL}/api/users/forgot/${token}`;
-          await axios(url);
+          const url = `/users/forgot/${token}`;
+          await clientAxios(url);
           setConfirm(true)
         } catch (error) {
           setAlert({msg: error.response.data.msg, error: true})
@@ -42,8 +42,8 @@ const NewPass = () => {
     }
 
     try {
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/users/forgot/${token}`;
-      const {data} = await axios.post(url, {password});
+      const url = `/users/forgot/${token}`;
+      const {data} = await clientAxios.post(url, {password});
       setAlert({msg: data.msg, error: false})
       setPassword('');
       setPasswordConfirmed(true);
