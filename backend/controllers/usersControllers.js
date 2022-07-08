@@ -51,14 +51,30 @@ const autenticateUser = async (req, res) => {
   }
 }
 
+/* Confirm Token and change status*/
+const confirmPassword = async (req, res) => {
+  const token = req.params.token;
+  const userConfirmed =  await usuario.confirmToken(token)
+  try {
+    if(userConfirmed){
+      return res.json({msg: 'Your account is confirmed'})
+    } else {
+      const error = new Error('Token is incorrect')
+      return res.status(404).json({msg: error.message})
+    }
+  } catch (err) {
+    console.log(`Error: ${err.messagge}`);
+  }
+}
 
-/* Confirm User by email */
+
+/* Confirm Token*/
 const confirm = async (req, res) => {
   const token = req.params.token;
   const userConfirmed =  await usuario.token(token)
   try {
     if(userConfirmed){
-      return res.json({msg: 'Your account is confirmed'})
+      return res.json({msg: 'The token is correct'})
     } else {
       const error = new Error('Token is incorrect')
       return res.status(404).json({msg: error.message})
@@ -126,5 +142,6 @@ export {
   confirm,
   forgotPassword,
   resetPassword,
-  perfil
+  perfil,
+  confirmPassword
 };

@@ -71,13 +71,12 @@ class Users {
         email: user.email,
         token: user.token
       });
-      
+
       return userForgot;
     }
 
     return false;
   }
-
 
   async resetPassword(data){
     const {token, password} = data;
