@@ -29,26 +29,33 @@ const registerUser = async (req, res) => {
 const autenticateUser = async (req, res) => {
   const userData = await usuario.searchUserbyMail(req.body);
 
-  // check if user does not exist
-  if(!userData){
-    const error = new Error('User does not exist')
-    return res.status(404).json({msg: error.message})
+  try {
+
+    // check if user does not exist
+    if(!userData){
+      const error = new Error('User does not exist')
+      return res.status(404).json({msg: error.message})
+    }
+
+    // check if user is confirmed
+    if(!userData.confirm){
+      const error = new Error('Your account is not confirmed yet')
+      return res.status(404).json({msg: error.message})
+    }
+
+    // check if password is correct
+    const compareData = await usuario.comparePassword(userData, req.body.password);
+    if(compareData){
+      return res.json({msg: 'User autenticated successfully', user: compareData});
+    } else {
+      const error = new Error('Password is incorrect')
+      return res.status(404).json({msg: error.message})
+    }
+
+  } catch (error) {
+    console.log(`Error: ${error.messagge}`);
   }
 
-  // check if user is confirmed
-  if(!userData.confirm){
-    const error = new Error('Your account is not confirmed yet')
-    return res.status(404).json({msg: error.message})
-  }
-
-  // check if password is correct
-  const compareData = await usuario.comparePassword(userData, req.body.password);
-  if(compareData){
-    return res.json(compareData);
-  } else {
-    const error = new Error('Password is incorrect')
-    return res.status(404).json({msg: error.message})
-  }
 }
 
 /* Confirm Token and change status*/

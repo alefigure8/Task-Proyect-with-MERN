@@ -6,6 +6,8 @@ import Login from './pages/Login';
 import NewPass from './pages/NewPass';
 import Register from './pages/Register';
 import {AuthProvider} from './context/AuthProvider';
+import ProtectedRoute from './layouts/ProtectedRoute';
+import Proyects from './pages/Proyects';
 
 function App() {
 
@@ -19,6 +21,14 @@ function App() {
             <Route path='forgot-password' element={<ForgotPass/>}/>
             <Route path='forgot-password/:token' element={<NewPass/>}/>
             <Route path='confirm/:id' element={<ConfirmAccount/>}/>
+          </Route>
+          <Route
+            path='/proyects'
+            element={<ProtectedRoute/>}
+          >
+            <Route index element={<Proyects/>}/>
+
+
           </Route>
         </Routes>
       </AuthProvider>

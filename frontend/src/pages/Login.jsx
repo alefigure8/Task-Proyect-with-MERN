@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [alert, setAlert] = useState('');
   const {setAuth} = useAuth();
-
+  const navigate = useNavigate();
 
   // Function to login the user
   const handleSubmit =  async (e) =>{
@@ -34,17 +34,17 @@ try {
   } , 3000)
 
   // save the token in the local storage
-  localStorage.setItem('token', data.token);
+  localStorage.setItem('token', data.user.token);
 
   // send the token to the context
-  setAuth(data);
+  setAuth(data.user);
 
   // empty the form
   setEmail('');
   setPassword('');
 
-  // redirect to home
-  navigate('/');
+  // redirect to proyects
+  navigate('/proyects');
 
 } catch (error) {
   setAlert({error: true, msg: error.response.data.msg});
