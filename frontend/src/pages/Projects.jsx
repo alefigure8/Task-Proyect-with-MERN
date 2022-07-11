@@ -1,6 +1,10 @@
 import React from 'react'
+import useProjects from '../hooks/useProjects'
 
 const Projects = () => {
+  const {projects, loading} = useProjects();
+  if(loading) return <p>Loading...</p>
+
   return (
     <>
       <h1
@@ -8,8 +12,18 @@ const Projects = () => {
       >
         Projects
       </h1>
-      <div>
-        
+      <div className='mt-5'>
+        {projects?.data.length > 0 ?
+          projects.data.map(project => (
+           <>
+             <h2
+              key={project.id}
+              className='text-2xl font-black'
+            >{project.name}</h2>
+            <p>{project.description}</p>
+           </>
+            ))
+        : "No hay proyectos"}
       </div>
 
     </>
