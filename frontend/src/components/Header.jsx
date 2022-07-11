@@ -15,13 +15,12 @@ const Header = () => {
          />
          <div
           className='flex items-center gap-4'>
-          <Link to='/proyects' className='font-bold uppercase'>
+          <Link to='/projects' className='font-bold uppercase'>
             Proyects
           </Link>
           <button
             type='button'
             className='p-2 rounded-md text-sm bg-sky-600 text-white font-bold uppercase hover:bg-sky-700'
-          
           >
             Logout
           </button>
