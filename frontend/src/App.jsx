@@ -7,7 +7,8 @@ import NewPass from './pages/NewPass';
 import Register from './pages/Register';
 import {AuthProvider} from './context/AuthProvider';
 import ProtectedRoute from './layouts/ProtectedRoute';
-import Proyects from './pages/Proyects';
+import Projects from './pages/Projects';
+import CreateProject from './pages/CreateProject';
 
 function App() {
 
@@ -23,12 +24,11 @@ function App() {
             <Route path='confirm/:id' element={<ConfirmAccount/>}/>
           </Route>
           <Route
-            path='/proyects'
+            path='/projects'
             element={<ProtectedRoute/>}
           >
-            <Route index element={<Proyects/>}/>
-
-
+            <Route index element={<Projects/>}/>
+            <Route path='create-project' element={<CreateProject/>}/>
           </Route>
         </Routes>
       </AuthProvider>
