@@ -7,7 +7,7 @@ const FormProject = () => {
   const [description, setDescription] = useState('')
   const [date, setDate] = useState('')
   const [client, setClient] = useState('')
-  const {showAlert, alert, setProjects} = useProjects();
+  const {showAlert, alert, submitProject} = useProjects();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -22,7 +22,7 @@ const FormProject = () => {
     }
 
     // send the data to the API
-    setProjects([name, description, date, client])
+    submitProject({name, description, date, client})
 
     // clean the form
     setName('')
@@ -33,7 +33,7 @@ const FormProject = () => {
 
   return (
    <form onSubmit={handleSubmit} className="bg-white py-10 px-5 md:w-1/2 rounded-lg shadow">
-    {alert?.error && <Alert alert={alert} />}
+    {alert?.msg && <Alert alert={alert} />}
     <div>
       <label
       className='text-gray-700 font-bold uppercase text-sm'
