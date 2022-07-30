@@ -7,6 +7,14 @@ const ProjectProvider = ({children}) => {
 
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState({});
+
+  const showAlert = (alertObject) => {
+    setAlert(alertObject)
+    setTimeout(()=>{
+      setAlert({})
+    }, 3000)
+  }
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -30,7 +38,10 @@ const ProjectProvider = ({children}) => {
     <ProjectContext.Provider
       value={{
         projects,
-        loading
+        loading,
+        showAlert,
+        alert,
+        setProjects
       }}
     >
       {children}
