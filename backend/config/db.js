@@ -10,7 +10,7 @@ const contectarDB = async () => {
       const url = `${connection.connection.host}:${connection.connection.port}`;
       console.log( `MongoDB Conectado en ${url}` );
   } catch (err) {
-    console.log(`Error: ${err.message}`);
+    console.log(`Error database: ${err.message}`);
     process.exit(1);
   }
 }
