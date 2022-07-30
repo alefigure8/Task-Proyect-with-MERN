@@ -15,13 +15,12 @@ const Projects = () => {
       <div className='mt-5'>
         {projects?.data?.length > 0 ?
           projects.data.map(project => (
-           <>
-             <h2
-              key={project.id}
-              className='text-2xl font-black'
-            >{project.name}</h2>
+           <div key={project.id}>
+             <h2 className='text-2xl font-black'>
+                {project.name}
+              </h2>
             <p>{project.description}</p>
-           </>
+           </div>
             ))
         : "No hay proyectos"}
       </div>
