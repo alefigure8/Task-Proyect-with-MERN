@@ -13,7 +13,7 @@ const Projects = () => {
         Projects
       </h1>
       <div className='mt-5'>
-        {projects?.data.length > 0 ?
+        {projects?.data?.length > 0 ?
           projects.data.map(project => (
            <>
              <h2
