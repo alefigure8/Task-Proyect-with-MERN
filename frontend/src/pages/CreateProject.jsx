@@ -1,5 +1,5 @@
 import React from 'react'
-
+import FormProject from '../components/FormProject'
 const Projects = () => {
 
   return (
@@ -9,8 +9,8 @@ const Projects = () => {
       >
         Create a new project
       </h1>
-      <div>
-        
+      <div className='mt-10 flex justify-center'>
+        <FormProject />
       </div>
 
     </>
