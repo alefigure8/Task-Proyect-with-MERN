@@ -39,6 +39,7 @@ const FormProject = () => {
     submitProject({id, name, description, date, client})
 
     // clean the form
+    setId(null)
     setName('')
     setDescription('')
     setDate('')
