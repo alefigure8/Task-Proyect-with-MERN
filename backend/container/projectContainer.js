@@ -27,10 +27,10 @@ class Projects {
     }
 
     // search task by project
-    const tasks = await Task.find({ project: projectId });
+    //const tasks = await Task.find({ project: projectId });
 
     // return project and tasks
-    return { project, tasks };
+    return project
   }
 
   async getProjectByUser(userId) {
