@@ -1,13 +1,27 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import useProjects from '../hooks/useProjects'
 import Alert from '../components/Alert'
+import { useParams } from 'react-router-dom'
 
 const FormProject = () => {
+  const [id, setId] = useState(null);
+  const params = useParams();
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState('')
   const [client, setClient] = useState('')
-  const {showAlert, alert, submitProject} = useProjects();
+  const {showAlert, alert, submitProject, project} = useProjects();
+
+  useEffect(()=>{
+    if(params.id){
+      setId(params.id)
+      setName(project.name)
+      setDescription(project.description)
+      setDate(project.date.split('T')[0])
+      setClient(project.client)
+    }
+  }
+  , [params.id])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -22,7 +36,7 @@ const FormProject = () => {
     }
 
     // send the data to the API
-    submitProject({name, description, date, client})
+    submitProject({id, name, description, date, client})
 
     // clean the form
     setName('')
@@ -88,7 +102,7 @@ const FormProject = () => {
         onChange = {e => setClient(e.target.value)}
       />
     </div>
-    <input type="submit" value="Submit" className="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-md w-full cursor-pointer transition-colors mt-2"/>
+    <input type="submit" value={id ? 'Edit Project' : 'Submit'} className="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-md w-full cursor-pointer transition-colors mt-2"/>
    </form>
   )
 }
