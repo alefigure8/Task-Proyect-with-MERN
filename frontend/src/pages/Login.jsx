@@ -43,8 +43,8 @@ try {
   setEmail('');
   setPassword('');
 
-  // redirect to proyects
-  navigate('/proyects');
+  // redirect to projects
+  navigate('/projects');
 
 } catch (error) {
   setAlert({error: true, msg: error.response.data.msg});
