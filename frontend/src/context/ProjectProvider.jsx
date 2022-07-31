@@ -14,9 +14,9 @@ const ProjectProvider = ({children}) => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      setLoading(true)
       const token = localStorage.getItem('token');
       try {
+        setLoading(true)
         const {data} = await clientAxios.get('/projects', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -47,8 +47,7 @@ const ProjectProvider = ({children}) => {
     }, 3000)
   }
 
-  // config
-
+  // config Header fetching token
   const setHeaderConfig = () => {
     const token = localStorage.getItem('token')
 
@@ -68,15 +67,14 @@ const ProjectProvider = ({children}) => {
 
   // Setting projects
   const submitProject = async(project) => {
-
     if(project.id){
-      editProject(project)
+      await editProject(project)
     } else {
-      createProject(project)
+      await createProject(project)
     }
-
   }
 
+  // Edit project
   const editProject = async(projectUpdated) => {
     try {
       const config = setHeaderConfig()
@@ -84,15 +82,8 @@ const ProjectProvider = ({children}) => {
       const {data} = await clientAxios.put(`projects/${projectUpdated.id}`, projectUpdated, config)
 
       // Updating the project in the projects array
-      const projectsUpdated = projects.map( project => {
-        if(project._id === data.data._id){
-          return data.data
-        } else {
-          return project
-        }
-      })
-
-      setProjects([...projectsUpdated])
+      const projectsUpdated = projects.map( project => project._id === data.data._id ? data.data :  project )
+      setProjects(projectsUpdated)
 
       setAlert({
           msg: data.msg,
@@ -118,6 +109,7 @@ const ProjectProvider = ({children}) => {
 
   }
 
+  // Create a new project
   const createProject = async(project) => {
     try{
 
@@ -155,24 +147,45 @@ const ProjectProvider = ({children}) => {
   const getProject = async (id) => {
     try{
       setLoading(true)
-      const token = localStorage.getItem('token')
 
-      if(!token){
-        return
-      }
-
-      const config = {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-
+      const config = setHeaderConfig()
       const {data} = await clientAxios.get(`projects/${id}`, config)
+
       setProject(data.data)
       setLoading(false)
 
     } catch (error){
+      setAlert({
+        msg: error.response.data.msg,
+        error: true
+      })
+
+      setTimeout(() => {
+        setAlert({})
+      }
+      , 3000)
+    }
+  }
+
+  // Delete a project
+  const deleteProject = async (id) => {
+    try {
+      const config = setHeaderConfig()
+      const {data} = await clientAxios.delete(`projects/${id}`, config)
+      const projectRemaining = projects.filter(project => project._id !== id)
+      setProjects(projectRemaining)
+
+      setAlert({
+        msg: data.msg,
+        error: false
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+        navigate('/projects')
+      }, 3000)
+
+    } catch (error) {
       setAlert({
         msg: error.response.data.msg,
         error: true
@@ -194,7 +207,8 @@ const ProjectProvider = ({children}) => {
         alert,
         showAlert,
         getProject,
-        submitProject
+        submitProject,
+        deleteProject
       }}
     >
       {children}
