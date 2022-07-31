@@ -1,4 +1,5 @@
 import React from 'react'
+import Preview from '../components/Preview';
 import useProjects from '../hooks/useProjects'
 
 const Projects = () => {
@@ -12,17 +13,12 @@ const Projects = () => {
       >
         Projects
       </h1>
-      <div className='mt-5'>
-        {projects?.data?.length > 0 ?
-          projects.data.map(project => (
-           <div key={project.id}>
-             <h2 className='text-2xl font-black'>
-                {project.name}
-              </h2>
-            <p>{project.description}</p>
-           </div>
+      <div className='bg-white mt-5 rounded-lg '>
+        {projects?.length > 0 ?
+          projects.map(project => (
+            <Preview key={project._id} project={project}/>
             ))
-        : "No hay proyectos"}
+        : <p className='text-center text-gray-600 uppercase p-5'>No projects</p>}
       </div>
 
     </>
