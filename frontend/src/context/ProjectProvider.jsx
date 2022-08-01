@@ -1,6 +1,7 @@
 import {useState, useEffect, createContext} from 'react'
 import clientAxios from '../config/clientAxios';
 import {useNavigate} from 'react-router-dom'
+import useAuth from '../hooks/useAuth';
 
 const ProjectContext = createContext();
 
@@ -10,20 +11,34 @@ const ProjectProvider = ({children}) => {
   const [project, setProject] = useState({});
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({});
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const { auth } = useAuth()
+
+    // config Header fetching token
+    const setHeaderConfig = () => {
+      const token = localStorage.getItem('token')
+      if(!token){
+        return
+      }
+      const config = {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+      return config
+    }
+
+  // Function to get all projects
   useEffect(() => {
     const fetchProjects = async () => {
-      const token = localStorage.getItem('token');
       try {
         setLoading(true)
-        const {data} = await clientAxios.get('/projects', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        setProjects(data.data);
+        const config = setHeaderConfig()
+        const {data} = await clientAxios.get('/projects', config);
         setLoading(false)
+        setProjects(data.data);
       } catch (error) {
         setAlert({
           msg: error.response.data.msg,
@@ -37,7 +52,7 @@ const ProjectProvider = ({children}) => {
       }
     }
     fetchProjects();
-  }, []);
+  }, [auth]);
 
   // Setting alert message
   const showAlert = (alertObject) => {
@@ -45,24 +60,6 @@ const ProjectProvider = ({children}) => {
     setTimeout(()=>{
       setAlert({})
     }, 3000)
-  }
-
-  // config Header fetching token
-  const setHeaderConfig = () => {
-    const token = localStorage.getItem('token')
-
-    if(!token){
-      return
-    }
-
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    }
-
-    return config
   }
 
   // Setting projects

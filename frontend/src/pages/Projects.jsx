@@ -4,7 +4,7 @@ import useProjects from '../hooks/useProjects'
 
 const Projects = () => {
   const {projects, loading} = useProjects();
-  if(loading) return <p>Loading...</p>
+  if(loading) return <p>LOADING...</p>
 
   return (
     <>
