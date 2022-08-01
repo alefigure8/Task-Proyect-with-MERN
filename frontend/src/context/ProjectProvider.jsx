@@ -11,6 +11,7 @@ const ProjectProvider = ({children}) => {
   const [project, setProject] = useState({});
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({});
+  const [modalForm, setModalForm] = useState(false);
 
   const navigate = useNavigate();
   const { auth } = useAuth()
@@ -112,8 +113,6 @@ const ProjectProvider = ({children}) => {
 
       const config = setHeaderConfig()
 
-      console.log(config)
-
       const {data} = await clientAxios.post('projects', project, config)
 
       setProjects([...projects, data.data])
@@ -141,6 +140,7 @@ const ProjectProvider = ({children}) => {
     }
   }
 
+  // Get project by id
   const getProject = async (id) => {
     try{
       setLoading(true)
@@ -195,6 +195,11 @@ const ProjectProvider = ({children}) => {
     }
   }
 
+  // handle Modal
+  const handleModal = () => { 
+    setModalForm(!modalForm)
+  }
+
   return (
     <ProjectContext.Provider
       value={{
@@ -202,6 +207,8 @@ const ProjectProvider = ({children}) => {
         project,
         loading,
         alert,
+        modalForm,
+        handleModal,
         showAlert,
         getProject,
         submitProject,
