@@ -147,7 +147,6 @@ const ProjectProvider = ({children}) => {
 
       const config = setHeaderConfig()
       const {data} = await clientAxios.get(`projects/${id}`, config)
-
       setProject(data.data)
       setLoading(false)
 
@@ -196,8 +195,42 @@ const ProjectProvider = ({children}) => {
   }
 
   // handle Modal
-  const handleModal = () => { 
+  const handleModal = () => {
     setModalForm(!modalForm)
+  }
+
+  // submit task
+  const submitTask = async(task) => {
+    try {
+      const config = setHeaderConfig()
+      const {data} = await clientAxios.post('tasks', task, config)
+
+      // Updating the project in the projects array
+      const projectUpdated = {...project}
+      projectUpdated.tasks = [...project.tasks, data.task]
+      setProject(projectUpdated)
+
+      // alert
+      setAlert({
+        msg: data.msg,
+        error: false
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+        setModalForm(false)
+      }, 1000)
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.msg,
+        error: true
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }, 3000)
+    }
+
   }
 
   return (
@@ -208,6 +241,7 @@ const ProjectProvider = ({children}) => {
         loading,
         alert,
         modalForm,
+        submitTask,
         handleModal,
         showAlert,
         getProject,
