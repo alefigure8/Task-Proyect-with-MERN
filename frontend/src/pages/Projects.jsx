@@ -1,9 +1,10 @@
-import React from 'react'
+import {useEffect} from 'react'
 import Preview from '../components/Preview';
 import useProjects from '../hooks/useProjects'
 
 const Projects = () => {
   const {projects, loading} = useProjects();
+
   if(loading) return <p>LOADING...</p>
 
   return (

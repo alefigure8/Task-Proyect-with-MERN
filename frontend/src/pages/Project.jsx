@@ -1,22 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom'
 import useProjects from '../hooks/useProjects'
 import ModalFormTask from '../components/ModalFormTask'
+import Task from '../components/Task';
 
 const Project = () => {
   const {id} = useParams();
   const {getProject, project, loading, handleModal} = useProjects();
 
   useEffect(()=>{
-    getProject(id);
+    const getData = async () => {
+      getProject(id);
+    }
+    getData();
   }, [])
 
   if(loading) return <div className='text-center text-xl font-bold flex justify-center items-center'>Loading...</div>
 
-
   const {_id, name} = project;
 
-  return (
+   return (
     <div>
       <div className='flex justify-between'>
         <h1
@@ -37,6 +40,9 @@ const Project = () => {
         </svg>
         New Task
       </button>
+      <div className='bg-white shadow mt-10 rounded-lg'>
+        {project.tasks?.length > 0 ? project.tasks?.map( task => <Task key={task._id} task={task}/>) : <p className='text-center my-5 p-10 text-gray-400'> There is not tasks yet </p>}
+      </div>
       <ModalFormTask />
     </div>
   )

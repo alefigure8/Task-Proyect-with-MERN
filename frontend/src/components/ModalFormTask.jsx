@@ -1,14 +1,49 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import useProjects from '../hooks/useProjects'
+import Alert from '../components/Alert'
+import { useParams } from 'react-router-dom'
 
 const OPTIONS = ['Low', 'Medium', 'High']
 
 export default function ModalFormTask() {
-  const { modalForm, handleModal } = useProjects()
+  const { modalForm, handleModal, alert, showAlert, submitTask} = useProjects()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
-  const [option, setOption] = useState('')
+  const [priority, setPriority] = useState('')
+  const [deliveryDate, setDeliveryDate] = useState('')
+  const params = useParams()
+
+  const handleSubmit =  e => {
+    e.preventDefault()
+
+    // validate
+    if([name, description, priority, deliveryDate].includes('')){
+      showAlert({
+        msg: 'Please fill all fields',
+        error: true
+      })
+      return
+    }
+
+    // submit task
+    const task = {
+      name,
+      description,
+      priority,
+      deliveryDate,
+      project: params.id
+    }
+
+    // submit task
+    submitTask(task)
+
+    // clear fields
+    setName('')
+    setDescription('')
+    setPriority('')
+    setDeliveryDate('')
+  }
 
   return (
     <Transition.Root show={modalForm} as={Fragment}>
@@ -64,7 +99,11 @@ export default function ModalFormTask() {
                                     <Dialog.Title as="h3" className="text-lg leading-6 font-bold text-gray-900 uppercase">
                                       Create a new task
                                     </Dialog.Title>
+
+                                    {alert?.msg && <Alert alert={alert}/> }
+
                                       <form
+                                        onSubmit={handleSubmit}
                                         className='my-8'
                                       >
                                         <div
@@ -106,6 +145,24 @@ export default function ModalFormTask() {
                                             className="mb-5"
                                         >
                                           <label 
+                                            htmlFor="date"
+                                            className='block text-sm font-medium leading-5 text-gray-700 uppercase'
+                                            >
+                                              Date (MM/DD/YYYY)
+                                          </label>
+                                          <input
+                                            id="date"
+                                            type="date"
+                                            className='w-full border-2 p-2 mt-2 placeholder-gray-400 rounded-md'
+                                            placeholder='Date rerlease'
+                                            value={deliveryDate}
+                                            onChange={e => setDeliveryDate(e.target.value)}
+                                          />
+                                        </div>
+                                        <div
+                                            className="mb-5"
+                                        >
+                                          <label 
                                             htmlFor="priority"
                                             className='block text-sm font-medium leading-5 text-gray-700 uppercase'
                                             >
@@ -115,12 +172,11 @@ export default function ModalFormTask() {
                                             id="priority"
                                             type="text"
                                             className='w-full border-2 p-2 mt-2 placeholder-gray-400 rounded-md'
-                                            placeholder='Name'
-                                            value={option}
-                                            onChange={e => setOption(e.target.value)}
+                                            value={priority}
+                                            onChange={e => setPriority(e.target.value)}
                                           >
                                             <option value = ""> -- Select an option -- </option>
-                                            {OPTIONS.map( option => <option key={option} value={option}>{option}</option>)}
+                                            {OPTIONS.map( option => <option key={option} value={option.toLocaleLowerCase()}>{option}</option>)}
                                           </select>
                                           <input 
                                             type="submit"
