@@ -14,7 +14,7 @@ class Projects {
 
   async getProject(projectId, userId) {
     // search project by id
-    const project = await Project.findById({_id: projectId});
+    const project = await Project.findById({_id: projectId}).populate('tasks');
 
     // Check if project exists
     if(!project){
@@ -26,15 +26,12 @@ class Projects {
       return false;
     }
 
-    // search task by project
-    //const tasks = await Task.find({ project: projectId });
-
     // return project and tasks
     return project
   }
 
   async getProjectByUser(userId) {
-    const project = await Project.find({ createdBy: userId });
+    const project = await Project.find({ createdBy: userId }).select('-tasks');
     if(project){
       return project;
     }
