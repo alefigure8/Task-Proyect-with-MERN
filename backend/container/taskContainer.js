@@ -21,6 +21,11 @@ class Tasks {
         deliveryDate
       });
       const taskSaved = await task.save();
+
+      // Add task to project
+      taskExists.tasks.push(taskSaved._id);
+      await taskExists.save();
+
       if(taskSaved){
         return taskSaved;
       }
