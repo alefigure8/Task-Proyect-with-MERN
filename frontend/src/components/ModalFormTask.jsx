@@ -1,19 +1,41 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import useProjects from '../hooks/useProjects'
-import Alert from '../components/Alert'
 import { useParams } from 'react-router-dom'
+import { useEffect } from 'react'
 
 const OPTIONS = ['Low', 'Medium', 'High']
 
 export default function ModalFormTask() {
-  const { modalForm, handleModal, alert, showAlert, submitTask} = useProjects()
+  const { modalForm, handleModal, showAlert, submitTask, task} = useProjects()
+  const [id, setId] = useState('')
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('')
   const [deliveryDate, setDeliveryDate] = useState('')
   const params = useParams()
 
+  // Function to get task and set values
+  useEffect(() => {
+    if(task._id){
+      setId(task._id)
+      setName(task.name)
+      setDescription(task.description)
+      setPriority(task.priority)
+      setDeliveryDate(task.deliveryDate.split('T')[0])
+      return
+    }
+
+    setId('')
+    setName('')
+    setDescription('')
+    setPriority('')
+    setDeliveryDate('')
+
+  }, [task])
+
+
+  // Function to submit task
   const handleSubmit =  e => {
     e.preventDefault()
 
@@ -28,6 +50,7 @@ export default function ModalFormTask() {
 
     // submit task
     const task = {
+      id,
       name,
       description,
       priority,
@@ -39,6 +62,7 @@ export default function ModalFormTask() {
     submitTask(task)
 
     // clear fields
+    setId('')
     setName('')
     setDescription('')
     setPriority('')
@@ -99,8 +123,6 @@ export default function ModalFormTask() {
                                     <Dialog.Title as="h3" className="text-lg leading-6 font-bold text-gray-900 uppercase">
                                       Create a new task
                                     </Dialog.Title>
-
-                                    {alert?.msg && <Alert alert={alert}/> }
 
                                       <form
                                         onSubmit={handleSubmit}
@@ -180,7 +202,7 @@ export default function ModalFormTask() {
                                           </select>
                                           <input 
                                             type="submit"
-                                            value="Create"
+                                            value={!id ? 'Create' : 'Update'}
                                             className='w-full mt-3 p-2 bg-sky-600 text-white font-bold uppercase cursor-pointer rounded-md hover:bg-sky-700'
                                           />
                                         </div>
