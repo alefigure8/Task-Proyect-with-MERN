@@ -1,7 +1,9 @@
 import { formatDate } from '../../helpers/formatDate';
+import useProject from '../hooks/useProjects';
 
 const Task = ({task}) => {
   const {_id, name, description, deliveryDate, priority, state} = task;
+  const {editTask, handleModalDelete} = useProject();
 
   return (
     <div className='flex border-b p-5 justify-between items-center'>
@@ -20,7 +22,10 @@ const Task = ({task}) => {
        </p>
       </div>
       <div className='flex gap-2'>
-        <button className='uppercase bg-indigo-600 px-4 py-2 font-bold text-sm text-white rounded-lg'>
+        <button 
+          onClick={ () => editTask(task) }
+          className='uppercase bg-indigo-600 px-4 py-2 font-bold text-sm text-white rounded-lg'
+        >
           Edit
         </button>
         {state ? (
@@ -32,7 +37,10 @@ const Task = ({task}) => {
             Uncomplete
           </button>
         )}
-          <button className='uppercase bg-red-600 px-4 py-2 font-bold text-sm text-white rounded-lg'>
+          <button 
+            onClick={ () => handleModalDelete(task) }
+            className='uppercase bg-red-600 px-4 py-2 font-bold text-sm text-white rounded-lg'
+          >
             Delete
           </button>
 
