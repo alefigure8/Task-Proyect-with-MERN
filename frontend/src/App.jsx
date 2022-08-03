@@ -12,6 +12,7 @@ import Projects from './pages/Projects';
 import CreateProject from './pages/CreateProject';
 import Project from './pages/Project';
 import EditProject from './pages/EditProject';
+import Add from './pages/Add';
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
               <Route path='create-project' element={<CreateProject/>}/>
               <Route path=':id' element={<Project/>}/>
               <Route path='edit/:id' element={<EditProject/>}/>
+              <Route path='add/:id' element={<Add/>}/>
             </Route>
           </Routes>
         </ProjectProvider>
