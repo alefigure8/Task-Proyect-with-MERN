@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom'
 import useProjects from '../hooks/useProjects'
 import ModalFormTask from '../components/ModalFormTask'
+import ModalDeleteTask from '../components/ModalDeleteTask'
 import Task from '../components/Task';
+import Alert from '../components/Alert';
 
 const Project = () => {
   const {id} = useParams();
-  const {getProject, project, loading, handleModal} = useProjects();
+  const {getProject, project, loading, handleModal, alert} = useProjects();
 
   useEffect(()=>{
     const getData = async () => {
@@ -21,7 +23,7 @@ const Project = () => {
 
    return (
     <div>
-      <div className='flex justify-between'>
+      <div className='flex justify-between items-center'>
         <h1
           className='text-3xl font-black'
         >
@@ -40,10 +42,25 @@ const Project = () => {
         </svg>
         New Task
       </button>
+      <div className='flex justify-center'>
+        <div className='w-full md:w-4/12 lg:w-1/4'>
+          {alert?.msg && <Alert alert={alert}/>}
+        </div>
+      </div>
       <div className='bg-white shadow mt-10 rounded-lg'>
         {project.tasks?.length > 0 ? project.tasks?.map( task => <Task key={task._id} task={task}/>) : <p className='text-center my-5 p-10 text-gray-400'> There is not tasks yet </p>}
       </div>
+      <div className='mt-10 flex justify-between items-center'>
+          <h3 className = 'text-3xl font-black'>Colaborador</h3>
+          <div className='flex gap-2 text-gray-400 hover:text-gray-500 transition-colors'>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <Link to={`/projects/add/${_id}`} className='uppercase font-bold'>Add</Link>
+        </div>
+      </div>
       <ModalFormTask />
+      <ModalDeleteTask />
     </div>
   )
 }
