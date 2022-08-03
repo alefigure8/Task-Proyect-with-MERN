@@ -12,6 +12,8 @@ const ProjectProvider = ({children}) => {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({});
   const [modalForm, setModalForm] = useState(false);
+  const [modalDelete, setModalDelete] = useState(false);
+  const [task, setTask] = useState({});
 
   const navigate = useNavigate();
   const { auth } = useAuth()
@@ -197,10 +199,19 @@ const ProjectProvider = ({children}) => {
   // handle Modal
   const handleModal = () => {
     setModalForm(!modalForm)
+    setTask({})
   }
 
   // submit task
   const submitTask = async(task) => {
+    if(task.id){
+      await updateTask(task)
+    } else {
+      await createTask(task)
+    }
+  }
+
+  const createTask = async(task) => {
     try {
       const config = setHeaderConfig()
       const {data} = await clientAxios.post('tasks', task, config)
@@ -210,6 +221,9 @@ const ProjectProvider = ({children}) => {
       projectUpdated.tasks = [...project.tasks, data.task]
       setProject(projectUpdated)
 
+      // close modal
+      setModalForm(false)
+
       // alert
       setAlert({
         msg: data.msg,
@@ -218,8 +232,8 @@ const ProjectProvider = ({children}) => {
 
       setTimeout(()=>{
         setAlert({})
-        setModalForm(false)
-      }, 1000)
+      }, 3000)
+
     } catch (error) {
       setAlert({
         msg: error.response.data.msg,
@@ -230,7 +244,105 @@ const ProjectProvider = ({children}) => {
         setAlert({})
       }, 3000)
     }
+  }
 
+  const updateTask = async(task) => {
+    try {
+      const config = setHeaderConfig()
+      const {data} = await clientAxios.put(`tasks/${task.id}`, task, config)
+
+      // Updating the project in the projects array
+      const projectUpdated = {...project}
+      projectUpdated.tasks = projectUpdated.tasks.map( taskStatus => taskStatus._id === data.task._id ? data.task : taskStatus )
+      setProject(projectUpdated)
+
+      // close modal
+      setModalForm(false)
+
+      // alert
+      setAlert({
+        msg: data.msg,
+        error: false
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }, 3000)
+
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.msg,
+        error: true
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }, 3000)
+    }
+  }
+
+  // Edit task
+  const editTask = async task => {
+    setModalForm(true)
+    setTask(task)
+  }
+
+  // Delete task
+  const handleModalDelete = task => {
+    setTask(task)
+    setModalDelete(!modalDelete)
+  }
+
+  const deleteTask = async() => {
+    try {
+      const config = setHeaderConfig()
+      const {data} = await clientAxios.delete(`tasks/${task._id}`, config)
+
+      console.log(data);
+
+      // Updating the project in the projects array
+      const updatedProject = {...project}
+      updatedProject.tasks = updatedProject.tasks.filter(taskStatus => taskStatus._id !== task._id)
+      setProject(updatedProject)
+
+      setAlert({
+        msg: data.msg,
+        error: false
+      })
+
+      setModalDelete(false)
+      setTask({})
+
+      setTimeout(()=>{
+        setAlert({})
+      }, 3000)
+
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.msg,
+        error: true
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }, 3000)
+    }
+  }
+
+  // add colaborator
+  const addColaborator = async(email) => {
+    console.log(email);
+
+    // message
+    setAlert({
+      msg: 'Mensaje Email',
+      error: false
+    })
+
+    setTimeout(()=>{
+      setAlert({})
+    }
+    , 3000)
   }
 
   return (
@@ -241,12 +353,18 @@ const ProjectProvider = ({children}) => {
         loading,
         alert,
         modalForm,
+        modalDelete,
+        task,
+        addColaborator,
+        deleteTask,
         submitTask,
-        handleModal,
-        showAlert,
-        getProject,
         submitProject,
-        deleteProject
+        getProject,
+        editTask,
+        deleteProject,
+        showAlert,
+        handleModal,
+        handleModalDelete
       }}
     >
       {children}
