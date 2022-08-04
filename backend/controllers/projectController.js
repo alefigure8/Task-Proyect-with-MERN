@@ -91,8 +91,40 @@ const deleteProject = async (req, res) => {
 
 }
 
-const addColaborator = (req, res) => {
+// Search colaborator by email
+const searchColaborator = async (req, res) => {
+  const email = req.body;
+  try {
+    const colaborator = await project.searchColaborator(email);
+    if(colaborator){
+      return res.json({
+        msg: 'Colaborator found',
+        data: colaborator
+      });
+    }
+    return res.status(400).json({ msg: 'Error finding colaborator' });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
+// Add colaborator to project
+const addColaborator = async (req, res) => {
+ try {
+  const projectId = req.params.id;
+  const email = req.body;
+  const userId = req.user._id;
+  const colaborator = await project.addColaborator(userId, projectId, email);
+
+  if(!colaborator.data){
+    return res.status(400).json(colaborator);
+  }
+
+  return res.status(200).json(colaborator);
+
+ } catch (error) {
+   console.log(error);
+ }
 }
 
 const removeColaborator = (req, res) => {
@@ -105,6 +137,7 @@ export {
   allProject,
   editProject,
   deleteProject,
+  searchColaborator,
   addColaborator,
   removeColaborator,
 }

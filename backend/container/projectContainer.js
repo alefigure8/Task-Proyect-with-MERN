@@ -1,5 +1,5 @@
 import Project from '../models/projects.js';
-import Task from '../models/task.js';
+import Usuario from '../models/Usuario.js';
 
 class Projects {
   async save(projectData, userId) {
@@ -14,7 +14,9 @@ class Projects {
 
   async getProject(projectId, userId) {
     // search project by id
-    const project = await Project.findById({_id: projectId}).populate('tasks');
+    const project = await Project.findById({_id: projectId})
+      .populate('tasks')
+      .populate('colaborators', 'name email');
 
     // Check if project exists
     if(!project){
@@ -59,6 +61,47 @@ class Projects {
       return projectDeleted;
     }
     return false
+  }
+
+  async searchColaborator({email}) {
+    const user = await Usuario.findOne({email}).select(['-password', '-__v', '-createdAt', '-updatedAt', '-token', '-confirm']);
+    if(user){
+      return user;
+    }
+    return false;
+  }
+
+  async addColaborator(userId, projectId, email) {
+
+    const project = await this.getProject(projectId, userId);
+    const user = await Usuario.findOne(email);
+
+    if(project && user){
+
+      
+      // chek if user is creator of project
+      if(project.createdBy.toString() !== userId._id.toString()){
+        return {msg: 'Only creator can added colaborators', data: false};
+      }
+
+      // chek if user is creator of project
+      if(project.createdBy.toString() === user._id.toString()){
+        return {msg: 'Creator can not be added as colcaborator', data: false};
+      }
+
+      // Check if user is already colaborator
+      if(project.colaborators.includes(user._id)){
+        return {msg: 'user is already colaborator', data: false};
+      }
+
+      // Add user to colaborators array
+      project.colaborators.push(user._id);
+      const projectUpdated = await project.save();
+
+      return {msg: 'Colaborator added with success', data: projectUpdated};
+    }
+
+    return false;
   }
 
 }
