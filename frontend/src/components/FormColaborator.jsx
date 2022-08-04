@@ -4,7 +4,7 @@ import Alert from './Alert';
 
 const FormColaborator = () => {
   const [email, setEmail] = useState('');
-  const {showAlert, alert, addColaborator} = useProjects();
+  const {showAlert, alert, searchColaborator} = useProjects();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -22,7 +22,8 @@ const FormColaborator = () => {
       return
     }
 
-    addColaborator(email);
+    searchColaborator(email);
+    setEmail('');
   }
 
   return (
@@ -42,7 +43,7 @@ const FormColaborator = () => {
           onChange = {e => setEmail(e.target.value)}
         />
       </div>
-      <input type="submit" value='Add' className="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-md w-full cursor-pointer transition-colors mt-2"/>
+      <input type="submit" value='Search user' className="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-md w-full cursor-pointer transition-colors mt-2"/>
       </form>
 
   )
