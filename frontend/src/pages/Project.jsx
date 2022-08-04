@@ -5,6 +5,8 @@ import ModalFormTask from '../components/ModalFormTask'
 import ModalDeleteTask from '../components/ModalDeleteTask'
 import Task from '../components/Task';
 import Alert from '../components/Alert';
+import Colaborators from '../components/Colaborators';
+import ModalColaborator from '../components/ModalColaborator';
 
 const Project = () => {
   const {id} = useParams();
@@ -59,8 +61,12 @@ const Project = () => {
           <Link to={`/projects/add/${_id}`} className='uppercase font-bold'>Add</Link>
         </div>
       </div>
+      <div className='bg-white shadow mt-10 rounded-lg'>
+        {project.colaborators?.length > 0 ? project.colaborators?.map(colaborator => <Colaborators key={colaborator._id} colaborator = {colaborator} />) : <p className='text-center my-5 p-10 text-gray-400'> There is not colaborators yet </p>}
+      </div>
       <ModalFormTask />
       <ModalDeleteTask />
+      <ModalColaborator />
     </div>
   )
 }
