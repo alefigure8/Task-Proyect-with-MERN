@@ -13,7 +13,9 @@ const ProjectProvider = ({children}) => {
   const [alert, setAlert] = useState({});
   const [modalForm, setModalForm] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [modalDeleteColaborator, setModalDeleteColaborator] = useState(false);
   const [task, setTask] = useState({});
+  const [colaborator, setColaborator] = useState({});
 
   const navigate = useNavigate();
   const { auth } = useAuth()
@@ -330,20 +332,72 @@ const ProjectProvider = ({children}) => {
   }
 
   // add colaborator
-  const addColaborator = async(email) => {
-    console.log(email);
+  const searchColaborator = async(email) => {
+    setLoading(true)
+    try {
+      const config = setHeaderConfig()
+      const {data} = await clientAxios.post(`/projects/colaborators`, {email}, config)
+      setColaborator(data.data);
 
-    // message
-    setAlert({
-      msg: 'Mensaje Email',
-      error: false
-    })
+      // message
+      setAlert({
+        msg: data.msg,
+        error: false
+      })
 
-    setTimeout(()=>{
-      setAlert({})
+      setTimeout(()=>{
+        setAlert({})
+      }
+      , 3000)
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.msg,
+        error: true
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }, 3000)
     }
-    , 3000)
+    setLoading(false)
   }
+
+  const addColaborator = async email => {
+    try {
+      const config = setHeaderConfig()
+      const {data} = await clientAxios.post(`/projects/colaborators/${project._id}`, email, config)
+
+      // alert
+      setAlert({
+        msg: data.msg,
+        error: false
+      })
+
+      // reset alert
+      setTimeout(()=>{
+        setAlert({})
+      } , 3000)
+    } catch (error) {
+      setAlert({
+        msg: error.response.data.msg,
+        error: true
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }
+      , 3000)
+    }
+
+    // reset colaborator
+    setColaborator({})
+  }
+
+  const handleModalColaborator = async colaboratorDelte => {
+    setColaborator(colaboratorDelte);
+    setModalDeleteColaborator(!modalDeleteColaborator)
+  }
+
 
   return (
     <ProjectContext.Provider
@@ -355,7 +409,11 @@ const ProjectProvider = ({children}) => {
         modalForm,
         modalDelete,
         task,
+        colaborator,
+        modalDeleteColaborator,
+        handleModalColaborator,
         addColaborator,
+        searchColaborator,
         deleteTask,
         submitTask,
         submitProject,
