@@ -127,8 +127,22 @@ const addColaborator = async (req, res) => {
  }
 }
 
-const removeColaborator = (req, res) => {
+const removeColaborator = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const email = req.body.email;
+    const userId = req.user._id;
 
+    const colaborator = await project.removeColaborator(userId, projectId, email);
+
+    if(!colaborator.data){
+      return res.status(400).json(colaborator);
+    }
+
+    return res.status(200).json(colaborator);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export {
