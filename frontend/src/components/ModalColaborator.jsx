@@ -4,7 +4,7 @@ import useProjects from '../hooks/useProjects'
 
 const ModalColaborator = () => {
 
-  const {modalDeleteColaborator, handleModalColaborator, colaborator} = useProjects();
+  const {modalDeleteColaborator, handleModalColaborator, colaborator, deleteColaborator} = useProjects();
 
   return (
     <Transition.Root show={modalDeleteColaborator} as={Fragment}>
@@ -72,6 +72,7 @@ const ModalColaborator = () => {
                                 <button
                                     type="button"
                                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md"
+                                    onClick={deleteColaborator}
                                 >
                                     Eliminar
                                 </button>
