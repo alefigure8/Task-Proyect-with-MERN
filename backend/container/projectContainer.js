@@ -78,7 +78,6 @@ class Projects {
 
     if(project && user){
 
-      
       // chek if user is creator of project
       if(project.createdBy.toString() !== userId._id.toString()){
         return {msg: 'Only creator can added colaborators', data: false};
@@ -102,6 +101,29 @@ class Projects {
     }
 
     return false;
+  }
+
+  async removeColaborator(userId, projectId, email) {
+    const project = await this.getProject(projectId, userId);
+    const user = await Usuario.findOne({email});
+
+    if(project && user){
+      // chek if user is creator of project
+      if(project.createdBy.toString() !== userId._id.toString()){
+        return {msg: 'Only creator can added colaborators', data: false};
+      }
+
+      // Check if user is not a colaborator
+      if(!project.colaborators.some( value => value._id.toString() === user._id.toString())){
+        return {msg: 'user is not a colaborator', data: false};
+      }
+
+      // Add user to colaborators array
+      project.colaborators.pull(user._id);
+      const projectUpdated = await project.save();
+
+      return {msg: 'Colaborator was delete with success', data: projectUpdated};
+    }
   }
 
 }
