@@ -393,9 +393,45 @@ const ProjectProvider = ({children}) => {
     setColaborator({})
   }
 
+  // habnle colaborator modal
   const handleModalColaborator = async colaboratorDelte => {
     setColaborator(colaboratorDelte);
     setModalDeleteColaborator(!modalDeleteColaborator)
+  }
+
+  const deleteColaborator = async() => {
+    try {
+      const config = setHeaderConfig()
+      const {data} = await clientAxios.post(`/projects/remove-colaborators/${project._id}`, colaborator, config)
+
+      const updatedProject = {...project}
+      updatedProject.colaborators = updatedProject.colaborators.filter(colaborator => colaborator._id !== colaborator._id)
+      setProject(updatedProject)
+
+      setModalDeleteColaborator(false)
+
+      // alert
+      setAlert({
+        msg: data.msg,
+        error: false
+      })
+
+      // reset alert
+      setTimeout(()=>{
+        setAlert({})
+      } , 3000)
+    }
+    catch (error) {
+      setAlert({
+        msg: error.response.data.msg,
+        error: true
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }
+      , 3000)
+    }
   }
 
 
@@ -411,6 +447,7 @@ const ProjectProvider = ({children}) => {
         task,
         colaborator,
         modalDeleteColaborator,
+        deleteColaborator,
         handleModalColaborator,
         addColaborator,
         searchColaborator,
