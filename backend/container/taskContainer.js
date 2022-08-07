@@ -9,10 +9,10 @@ class Tasks {
     const { name, description, priority, project, deliveryDate} = task;
 
     // Check if project exist and if user is owner
-    const taskExists = await projects.getProject(project, userId);
+    const {data} = await projects.getProject(project, userId);
 
     // save task
-    if(taskExists){
+    if(data){
       const task = new Task({
         name,
         description,
@@ -23,8 +23,8 @@ class Tasks {
       const taskSaved = await task.save();
 
       // Add task to project
-      taskExists.tasks.push(taskSaved._id);
-      await taskExists.save();
+      data.tasks.push(taskSaved._id);
+      await data.save();
 
       if(taskSaved){
         return taskSaved;
@@ -34,11 +34,11 @@ class Tasks {
   }
 
   async get (taskId, userId){
-    const taskExist = await Task.findById(taskId);
+    const taskExist = await Task.findById({_id: taskId})
     if(taskExist){
       const porjectId = taskExist.project;
-      const projectExist = await projects.getProject(porjectId, userId);
-      if(projectExist){
+      const {data} = await projects.getProject(porjectId, userId);
+      if(data){
         return taskExist;
       }
       return false;
@@ -64,14 +64,42 @@ class Tasks {
 
   async delete (taskId, userId){
     const taskExist = await this.get(taskId, userId);
-    if(taskExist){
-      const taskDeleted = await Task.deleteOne();
-      if(taskDeleted){
-        return taskDeleted;
-      }
-    }
+    const {data} = await projects.getProject(taskExist.project, userId);
 
+    if(taskExist && data){
+      if(data.createdBy.toString() !== userId.toString()){
+          return false;
+      }
+
+      data.tasks.pull(taskId);
+
+      await Promise.allSettled([await data.save(), await Task.deleteOne()])
+
+      return true;
+    }
     return false;
+  }
+
+  async changeState (taskId, userId){
+    const taskExist = await this.get(taskId, userId);
+     const {data} = await projects.getProject(taskExist.project, userId);
+
+    if(taskExist && data){
+
+      if(data.createdBy.toString() !== userId.toString() && !data.colaborators.some( value => value._id.toString() === userId.toString())){
+          return {msg: 'User doesnt have permission', data: false};
+      }
+
+      taskExist.state = !taskExist.state;
+      const updatedTask = await taskExist.save();
+
+      if(updatedTask){
+        return {msg: 'Task updated', task: updatedTask};
+      }
+
+      return {msg: 'Task not updated', task: false};
+    }
+    return {msg: 'Task not found', task: false};
   }
 
 }
