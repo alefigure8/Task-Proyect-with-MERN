@@ -75,7 +75,17 @@ const delteTask = async (req, res) => {
 }
 
 const changeStateTask = async (req, res) => {
-
+  try {
+    const userId = req.user._id;
+    const taskId = req.params.id;
+    const taskUpdated = await task.changeState(taskId, userId);
+    if(taskUpdated.task){
+      return res.status(200).json(taskUpdated);
+    }
+    return res.status(400).json(taskUpdated);
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export {
