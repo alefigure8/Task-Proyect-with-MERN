@@ -40,14 +40,14 @@ const getProject = async (req, res) => {
   const projectId = req.params.id;
   const userId = req.user._id;
   try {
+
     const projectById = await project.getProject(projectId, userId);
-    if(projectById){
-      return res.json({
-        msg: 'Project found',
-        data: projectById
-      });
+
+    if(projectById.data){
+      return res.status(200).json(projectById);
     }
-    return res.status(400).json({ msg: 'Error finding project' });
+
+    return res.status(400).json(projectById);
   } catch (error) {
     console.log(error);
   }
