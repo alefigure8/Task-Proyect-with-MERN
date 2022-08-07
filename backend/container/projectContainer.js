@@ -13,27 +13,30 @@ class Projects {
   }
 
   async getProject(projectId, userId) {
-    // search project by id
     const project = await Project.findById({_id: projectId})
       .populate('tasks')
-      .populate('colaborators', 'name email');
+      .populate('colaborators', 'name email _id');
 
-    // Check if project exists
     if(!project){
-      return false;
+      return {msg: 'Project not found', data: false};
     }
 
-    // Check if project exist and if user is owner or colaborator
-    if(project.createdBy.toString() !== userId.toString() && !project.colaborators.includes(userId)){
-      return false;
+    if(project.createdBy.toString() !== userId.toString() && !project.colaborators.some( value => value._id.toString() === userId.toString())){
+      return {msg: 'User doesnt have permission', data: false};
     }
 
-    // return project and tasks
-    return project
+    return {msg: 'Project found', data: project};
   }
 
   async getProjectByUser(userId) {
-    const project = await Project.find({ createdBy: userId }).select('-tasks');
+    const project = await Project.find({
+      '$or' : [
+        { colaborators: { $in:  userId} },
+        { createdBy: {$in: userId} }
+      ]
+    })
+      .select('-tasks');
+
     if(project){
       return project;
     }
@@ -41,13 +44,13 @@ class Projects {
   }
 
   async update(projectId, projectData, userId) {
-    const findProyect = await this.getProject(projectId, userId);
-    if(findProyect){
-      findProyect.name = projectData.name || findProyect.name;
-      findProyect.description = projectData.description || findProyect.description;
-      findProyect.client = projectData.client || findProyect.client;
-      findProyect.startDate = projectData.startDate || findProyect.startDate;
-      const projectUpdated = await findProyect.save();
+    const {data} = await this.getProject(projectId, userId);
+    if(data){
+      data.name = projectData.name || data.name;
+      data.description = projectData.description || data.description;
+      data.client = projectData.client || data.client;
+      data.startDate = projectData.startDate || data.startDate;
+      const projectUpdated = await data.save();
 
       return projectUpdated;
     }
@@ -55,9 +58,9 @@ class Projects {
   }
 
   async delete(projectId, userId) {
-    const findProyect = await this.getProject(projectId, userId);
-    if(findProyect){
-      const projectDeleted = await findProyect.remove();
+    const {data} = await this.getProject(projectId, userId);
+    if(data){
+      const projectDeleted = await data.remove();
       return projectDeleted;
     }
     return false
@@ -73,54 +76,57 @@ class Projects {
 
   async addColaborator(userId, projectId, email) {
 
-    const project = await this.getProject(projectId, userId);
+    const {data} = await this.getProject(projectId, userId);
     const user = await Usuario.findOne(email);
 
-    if(project && user){
+    if(data && user){
 
-      // chek if user is creator of project
-      if(project.createdBy.toString() !== userId._id.toString()){
+      // chek if user is creator of data
+      if(data.createdBy.toString() != userId.toString() ){
         return {msg: 'Only creator can added colaborators', data: false};
       }
 
-      // chek if user is creator of project
-      if(project.createdBy.toString() === user._id.toString()){
+      // chek if user is creator of data
+      if(data.createdBy.toString() === user._id.toString()){
         return {msg: 'Creator can not be added as colcaborator', data: false};
       }
 
       // Check if user is already colaborator
-      if(project.colaborators.includes(user._id)){
+      if(data.colaborators.includes(user._id)){
         return {msg: 'user is already colaborator', data: false};
       }
 
       // Add user to colaborators array
-      project.colaborators.push(user._id);
-      const projectUpdated = await project.save();
+      data.colaborators.push(user._id);
+      const projectUpdated = await data.save();
 
-      return {msg: 'Colaborator added with success', data: projectUpdated};
+      return {msg: 'Colaborator was added with success', data: projectUpdated};
     }
 
     return false;
   }
 
   async removeColaborator(userId, projectId, email) {
-    const project = await this.getProject(projectId, userId);
+    const {data} = await this.getProject(projectId, userId);
+
     const user = await Usuario.findOne({email});
 
-    if(project && user){
-      // chek if user is creator of project
-      if(project.createdBy.toString() !== userId._id.toString()){
-        return {msg: 'Only creator can added colaborators', data: false};
+      if(data && user){
+
+      if(data.createdBy.toString() !== userId.toString() && !data.colaborators.some( value => value._id.toString() === userId.toString())){
+        return {msg: 'You are not allowed to delete colaborators', data: false};
       }
 
-      // Check if user is not a colaborator
-      if(!project.colaborators.some( value => value._id.toString() === user._id.toString())){
+      if(data.createdBy.toString() !== userId.toString() && user._id.toString() !== userId.toString()){
+        return {msg: 'You are not allowed to delete others colaborators', data: false};
+      }
+
+      if(!data.colaborators.some( value => value._id.toString() === user._id.toString())){
         return {msg: 'user is not a colaborator', data: false};
       }
 
-      // Add user to colaborators array
-      project.colaborators.pull(user._id);
-      const projectUpdated = await project.save();
+      data.colaborators.pull(user._id);
+      const projectUpdated = await data.save();
 
       return {msg: 'Colaborator was delete with success', data: projectUpdated};
     }
