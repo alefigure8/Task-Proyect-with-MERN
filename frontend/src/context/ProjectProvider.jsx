@@ -155,6 +155,7 @@ const ProjectProvider = ({children}) => {
       setLoading(false)
 
     } catch (error){
+      navigate('/projects')
       setAlert({
         msg: error.response.data.msg,
         error: true
@@ -300,8 +301,6 @@ const ProjectProvider = ({children}) => {
       const config = setHeaderConfig()
       const {data} = await clientAxios.delete(`tasks/${task._id}`, config)
 
-      console.log(data);
-
       // Updating the project in the projects array
       const updatedProject = {...project}
       updatedProject.tasks = updatedProject.tasks.filter(taskStatus => taskStatus._id !== task._id)
@@ -434,6 +433,41 @@ const ProjectProvider = ({children}) => {
     }
   }
 
+  const handleSatatus = async id => {
+    try{
+      const config = setHeaderConfig()
+      const {data} = await clientAxios.post(`/tasks/status/${id}`, {}, config)
+  
+      // Updating the project in the projects array
+      const projectUpdated = {...project}
+      projectUpdated.tasks = projectUpdated.tasks.map( taskStatus => {
+        return taskStatus._id === data.task._id ? data.task : taskStatus
+      } )
+
+      setProject(projectUpdated)
+
+      // alert
+      setAlert({
+        msg: data.msg,
+        error: false
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }, 3000)
+    }catch (error){
+      setAlert({
+        msg: error.response.data.msg,
+        error: true
+      })
+
+      setTimeout(()=>{
+        setAlert({})
+      }
+      , 3000)
+    }
+  }
+
 
   return (
     <ProjectContext.Provider
@@ -447,6 +481,7 @@ const ProjectProvider = ({children}) => {
         task,
         colaborator,
         modalDeleteColaborator,
+        handleSatatus,
         deleteColaborator,
         handleModalColaborator,
         addColaborator,
