@@ -13,8 +13,14 @@ class Projects {
   }
 
   async getProject(projectId, userId) {
-    const project = await Project.findById({_id: projectId})
-      .populate('tasks')
+    const project = await Project.findById(projectId)
+      .populate({
+          path: 'tasks',
+          populate: {
+            path: 'completedBy',
+            select: '-password -__v -createdAt -updatedAt -token -confirm'
+        }
+      })
       .populate('colaborators', 'name email _id');
 
     if(!project){
