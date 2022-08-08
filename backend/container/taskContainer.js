@@ -35,6 +35,8 @@ class Tasks {
 
   async get (taskId, userId){
     const taskExist = await Task.findById({_id: taskId})
+      .populate('project')
+      .populate('completedBy');
     if(taskExist){
       const porjectId = taskExist.project;
       const {data} = await projects.getProject(porjectId, userId);
@@ -63,7 +65,7 @@ class Tasks {
   }
 
   async delete (taskId, userId){
-    const taskExist = await this.get(taskId, userId);
+    const taskExist = await this.get(taskId, userId).populate('project');
     const {data} = await projects.getProject(taskExist.project, userId);
 
     if(taskExist && data){
@@ -72,7 +74,7 @@ class Tasks {
       }
 
       data.tasks.pull(taskId);
-
+  
       await Promise.allSettled([await data.save(), await Task.deleteOne()])
 
       return true;
@@ -82,16 +84,24 @@ class Tasks {
 
   async changeState (taskId, userId){
     const taskExist = await this.get(taskId, userId);
-     const {data} = await projects.getProject(taskExist.project, userId);
 
-    if(taskExist && data){
+    if(taskExist){
 
-      if(data.createdBy.toString() !== userId.toString() && !data.colaborators.some( value => value._id.toString() === userId.toString())){
+      if(taskExist.project.createdBy.toString() !== userId.toString() && !taskExist.project.colaborators.some( value => value._id.toString() === userId.toString())){
           return {msg: 'User doesnt have permission', data: false};
       }
 
       taskExist.state = !taskExist.state;
-      const updatedTask = await taskExist.save();
+
+      if(taskExist.state){
+        taskExist.completedBy = userId;
+      } else {
+        taskExist.completedBy = null;
+      }
+
+      await (await taskExist.save());
+
+      const updatedTask = await this.get(taskId, userId);
 
       if(updatedTask){
         return {msg: 'Task updated', task: updatedTask};
