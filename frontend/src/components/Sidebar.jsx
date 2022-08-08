@@ -6,7 +6,7 @@ const Sidebar = () => {
   const {auth} = useAuth();
   return (
     <aside
-      className='md:w-80 lg:w96 p-5 bg-gray-100'
+      className='md:w-1/3 lg:w-1/5 xl:w-1/6 lg:w96 p-5 bg-gray-100'
     >
       <p
         className='font-bold'
