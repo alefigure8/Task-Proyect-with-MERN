@@ -18,7 +18,7 @@ const Add = () => {
       </div>
       {loading ? <h1>Loading...</h1> : colaborator?._id && (
         <div className='flex mt-10 justify-center '>
-          <div className='bg-white py-10 px-5 md:w-1/2 rounded-lg shadow'>
+          <div className='bg-white py-10 px-5 w-full lg:w-1/2 rounded-lg shadow'>
             <h2 className='text-2xl font-black text-center'>Result</h2>
             <div className='flex justify-between mt-5'>
               <p className='text-gray-700'><span className='font-bold'>Name: </span>{name}</p>
