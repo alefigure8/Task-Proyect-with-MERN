@@ -16,6 +16,7 @@ const ProjectProvider = ({children}) => {
   const [modalDeleteColaborator, setModalDeleteColaborator] = useState(false);
   const [task, setTask] = useState({});
   const [colaborator, setColaborator] = useState({});
+  const [modalSearch, setModalSearch] = useState(false);
 
   const navigate = useNavigate();
   const { auth } = useAuth()
@@ -468,6 +469,10 @@ const ProjectProvider = ({children}) => {
     }
   }
 
+  const handleModalSearch = () => {
+    setModalSearch(!modalSearch)
+  }
+
 
   return (
     <ProjectContext.Provider
@@ -481,7 +486,9 @@ const ProjectProvider = ({children}) => {
         task,
         colaborator,
         modalDeleteColaborator,
+        modalSearch,
         handleSatatus,
+        handleModalSearch,
         deleteColaborator,
         handleModalColaborator,
         addColaborator,

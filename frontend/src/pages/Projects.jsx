@@ -2,6 +2,7 @@ import {useEffect} from 'react'
 import Preview from '../components/Preview';
 import useProjects from '../hooks/useProjects'
 import Alert from '../components/Alert';
+import Searcher from '../components/Searcher';
 
 const Projects = () => {
   const {projects, loading, alert} = useProjects();
@@ -23,7 +24,7 @@ const Projects = () => {
             ))
         : <p className='text-center text-gray-600 uppercase p-5'>No projects</p>}
       </div>
-
+      <Searcher />
     </>
   )
 }
