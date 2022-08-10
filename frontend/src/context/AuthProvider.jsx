@@ -1,5 +1,5 @@
 import {useState, useEffect, createContext} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {Navigate, useNavigate} from 'react-router-dom';
 import clientAxios from '../config/clientAxios';
 
 
@@ -12,17 +12,13 @@ const AuthProvider = ({children}) => {
 
   useEffect(() => {
     const authUser = async () => {
-
       setLoading(true);
       const token = localStorage.getItem('token');
-
-      // if the token is null
       if (!token) {
         setLoading(false);
         return;
       }
 
-      // if the token is not null
       try {
         const url = '/users/perfil';
         const {data} = await clientAxios.get(url, {
@@ -31,13 +27,13 @@ const AuthProvider = ({children}) => {
           },
         });
         setAuth(data);
-        navigate('/projects');
+
       } catch (error) {
         console.log(error);
       }
+
       setLoading(false);
     }
-
     authUser();
   }, []);
 
