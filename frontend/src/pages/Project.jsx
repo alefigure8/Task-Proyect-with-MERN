@@ -8,7 +8,9 @@ import Alert from '../components/Alert';
 import Colaborators from '../components/Colaborators';
 import ModalColaborator from '../components/ModalColaborator';
 import useAdmin from '../hooks/useAdmin';
+import { io } from "socket.io-client";
 
+let socket;
 const Project = () => {
   const {id} = useParams();
   const {getProject, project, loading, handleModal, alert} = useProjects();
@@ -20,6 +22,15 @@ const Project = () => {
     }
     getData();
   }, [])
+
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL)
+    socket.emit('open project', id)
+  }, [])
+
+  useEffect(() => {
+    socket.on('response project', data => console.log(data))
+  })
 
   if(loading) return <div className='text-center text-xl font-bold flex justify-center items-center'>Loading...</div>
 

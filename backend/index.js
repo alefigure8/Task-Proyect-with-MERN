@@ -42,3 +42,20 @@ const server = app.listen(app.get('PORT'), ()=> {
 server.on('error', err => {
   console.log(err);
 })
+
+/* Socket IO */
+import { Server } from 'socket.io';
+const io = new Server(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: process.env.FRONTEND_URL
+  }
+})
+
+io.on("connection", socket => {
+  console.log("New client connected");
+  socket.on('open project', id => {
+    socket.join(id)
+    socket.to(id).emit('response project', id)
+  });
+})
