@@ -65,7 +65,7 @@ class Tasks {
   }
 
   async delete (taskId, userId){
-    const taskExist = await this.get(taskId, userId).populate('project');
+    const taskExist = await this.get(taskId, userId);
     const {data} = await projects.getProject(taskExist.project, userId);
 
     if(taskExist && data){
@@ -75,7 +75,7 @@ class Tasks {
 
       data.tasks.pull(taskId);
   
-      await Promise.allSettled([await data.save(), await Task.deleteOne()])
+      await Promise.allSettled([await data.save(), await Task.deleteOne({_id: taskId})]);
 
       return true;
     }
