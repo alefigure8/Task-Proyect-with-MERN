@@ -54,8 +54,14 @@ const io = new Server(server, {
 
 io.on("connection", socket => {
   console.log("New client connected");
+
+  // params to join a room
   socket.on('open project', id => {
     socket.join(id)
-    socket.to(id).emit('response project', id)
   });
+
+  // task created and sended to the room
+  socket.on('createTask', data => {
+    socket.to(data.project).emit('addedTask', data)
+  })
 })
