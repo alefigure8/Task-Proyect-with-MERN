@@ -64,4 +64,17 @@ io.on("connection", socket => {
   socket.on('createTask', data => {
     socket.to(data.project).emit('addedTask', data)
   })
+
+  socket.on('deletedTask', data => {
+    socket.to(data.project).emit('deletedTask', data)
+  })
+
+  socket.on('updateTask', data => {
+    socket.to(data.project).emit('updatedTask', data)
+  })
+
+  socket.on('statusTask', data => {
+    console.log(data)
+    socket.to(data.project._id).emit('statusTask', data)
+  })
 })
