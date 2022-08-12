@@ -13,7 +13,7 @@ import { io } from "socket.io-client";
 let socket;
 const Project = () => {
   const {id} = useParams();
-  const {getProject, project, loading, handleModal, alert} = useProjects();
+  const {getProject, project, loading, handleModal, alert, submitProjectTask} = useProjects();
   const admin = useAdmin();
 
   useEffect(()=>{
@@ -29,7 +29,11 @@ const Project = () => {
   }, [])
 
   useEffect(() => {
-    socket.on('response project', data => console.log(data))
+    socket.on('addedTask', newTask => {
+      if(newTask.project === project._id){
+        submitProjectTask(newTask)
+      }
+    })
   })
 
   if(loading) return <div className='text-center text-xl font-bold flex justify-center items-center'>Loading...</div>
