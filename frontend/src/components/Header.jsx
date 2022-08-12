@@ -1,10 +1,19 @@
 import {useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import useProjects from '../hooks/useProjects'
+import useAuth from '../hooks/useAuth'
 
 const Header = () => {
 
-  const {handleModalSearch} = useProjects()
+  const {handleModalSearch, handleLogout} = useProjects()
+  const {logout} = useAuth()
+
+  const handleCloseSession = () => {
+    logout()
+    handleLogout()
+
+    localStorage.removeItem('token')
+  }
 
   return (
     <header className='px-4 py-5 bg-white border-b'>
@@ -35,6 +44,7 @@ const Header = () => {
           <button
             type='button'
             className='p-2 rounded-md text-sm bg-sky-600 text-white font-bold uppercase hover:bg-sky-700'
+            onClick={handleCloseSession}
           >
             Logout
           </button>
