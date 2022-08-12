@@ -7,13 +7,13 @@ const AuthContext = createContext();
 
 const AuthProvider = ({children}) => {
   const [auth, setAuth] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const authUser = async () => {
-      setLoading(true);
       const token = localStorage.getItem('token');
+
       if (!token) {
         setLoading(false);
         return;
@@ -26,23 +26,32 @@ const AuthProvider = ({children}) => {
             Authorization: `Bearer ${token}`,
           },
         });
+
         setAuth(data);
+        console.log(data);
+        //navigate('/projects');
+        setLoading(false);
 
       } catch (error) {
         console.log(error);
       }
 
-      setLoading(false);
     }
+
     authUser();
   }, []);
+
+  const logout = () => {
+    setAuth({});
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        setAuth,
         auth,
         loading,
+        logout,
+        setAuth
       }}
     >
       {children}
