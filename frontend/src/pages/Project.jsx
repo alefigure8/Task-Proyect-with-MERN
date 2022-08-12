@@ -13,7 +13,7 @@ import { io } from "socket.io-client";
 let socket;
 const Project = () => {
   const {id} = useParams();
-  const {getProject, project, loading, handleModal, alert, submitProjectTask} = useProjects();
+  const {getProject, project, loading, handleModal, alert, submitProjectTask, handleDeleteTask, handleUpdateTask, handleStatusTask} = useProjects();
   const admin = useAdmin();
 
   useEffect(()=>{
@@ -32,6 +32,24 @@ const Project = () => {
     socket.on('addedTask', newTask => {
       if(newTask.project === project._id){
         submitProjectTask(newTask)
+      }
+    })
+
+    socket.on('deletedTask', deletedTask => {
+      if(deletedTask.project === project._id){
+        handleDeleteTask(deletedTask)
+      }
+    })
+
+    socket.on('updatedTask', updatedTask => {
+      if(updatedTask.project === project._id){
+        handleUpdateTask(updatedTask)
+      }
+    })
+
+    socket.on('statusTask', data => {
+      if(data.project._id === project._id){
+        handleStatusTask(data)
       }
     })
   })
