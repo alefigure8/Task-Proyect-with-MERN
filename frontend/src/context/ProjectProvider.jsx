@@ -261,10 +261,7 @@ const ProjectProvider = ({children}) => {
       const config = setHeaderConfig()
       const {data} = await clientAxios.put(`tasks/${task.id}`, task, config)
 
-      // Updating the project in the projects array
-      const projectUpdated = {...project}
-      projectUpdated.tasks = projectUpdated.tasks.map( taskStatus => taskStatus._id === data.task._id ? data.task : taskStatus )
-      setProject(projectUpdated)
+      socket.emit('updateTask', data.task)
 
       // close modal
       setModalForm(false)
@@ -308,10 +305,7 @@ const ProjectProvider = ({children}) => {
       const config = setHeaderConfig()
       const {data} = await clientAxios.delete(`tasks/${task._id}`, config)
 
-      // Updating the project in the projects array
-      const updatedProject = {...project}
-      updatedProject.tasks = updatedProject.tasks.filter(taskStatus => taskStatus._id !== task._id)
-      setProject(updatedProject)
+      socket.emit('deletedTask', task)
 
       setAlert({
         msg: data.msg,
@@ -445,13 +439,7 @@ const ProjectProvider = ({children}) => {
       const config = setHeaderConfig()
       const {data} = await clientAxios.post(`/tasks/status/${id}`, {}, config)
   
-      // Updating the project in the projects array
-      const projectUpdated = {...project}
-      projectUpdated.tasks = projectUpdated.tasks.map( taskStatus => {
-        return taskStatus._id === data.task._id ? data.task : taskStatus
-      } )
-
-      setProject(projectUpdated)
+      socket.emit('statusTask', data.task)
 
       // alert
       setAlert({
@@ -482,7 +470,6 @@ const ProjectProvider = ({children}) => {
   // Socket.io
 
   const submitProjectTask = task => {
-
     // Updating the project in the projects array
     const projectUpdated = {...project}
     projectUpdated.tasks = [...projectUpdated.tasks, task]
@@ -490,6 +477,45 @@ const ProjectProvider = ({children}) => {
 
   }
 
+  const handleDeleteTask = async deletedTask => {
+    // Updating the project in the projects array
+    const updatedProject = {...project}
+    updatedProject.tasks = updatedProject.tasks.filter(taskStatus => taskStatus._id !== deletedTask._id)
+    setProject(updatedProject)
+
+  }
+
+  const handleUpdateTask = async updatedTask => {
+    // Updating the project in the projects array
+    const projectUpdated = {...project}
+    projectUpdated.tasks = projectUpdated.tasks.map( taskStatus => taskStatus._id === updatedTask._id ? updatedTask : taskStatus )
+    setProject(projectUpdated)
+
+  }
+
+  const handleStatusTask = async task => {
+    // Updating the project in the projects array
+    const projectUpdated = {...project}
+    projectUpdated.tasks = projectUpdated.tasks.map( taskStatus => {
+      return taskStatus._id === task._id ? task : taskStatus
+    } )
+    setProject(projectUpdated)
+
+  }
+
+  // LOgout
+  const handleLogout = () => {
+    setProjects([])
+    setProject({})
+    setColaborator({})
+    setTask({})
+    setModalForm(false)
+    setModalDelete(false)
+    setModalDeleteColaborator(false)
+    setModalSearch(false)
+    setLoading(false)
+    setAlert({})
+  }
 
   return (
     <ProjectContext.Provider
@@ -504,6 +530,10 @@ const ProjectProvider = ({children}) => {
         colaborator,
         modalDeleteColaborator,
         modalSearch,
+        handleLogout,
+        handleStatusTask,
+        handleUpdateTask,
+        handleDeleteTask,
         submitProjectTask,
         handleSatatus,
         handleModalSearch,
