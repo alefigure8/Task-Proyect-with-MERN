@@ -2,6 +2,9 @@ import {useState, useEffect, createContext} from 'react'
 import clientAxios from '../config/clientAxios';
 import {useNavigate} from 'react-router-dom'
 import useAuth from '../hooks/useAuth';
+import { io } from "socket.io-client";
+
+let socket;
 
 const ProjectContext = createContext();
 
@@ -59,6 +62,11 @@ const ProjectProvider = ({children}) => {
     }
     fetchProjects();
   }, [auth]);
+
+  // call to socket io
+  useEffect(() => {
+    socket = io(import.meta.env.VITE_BACKEND_URL)
+  }, [])
 
   // Setting alert message
   const showAlert = (alertObject) => {
@@ -220,10 +228,8 @@ const ProjectProvider = ({children}) => {
       const config = setHeaderConfig()
       const {data} = await clientAxios.post('tasks', task, config)
 
-      // Updating the project in the projects array
-      const projectUpdated = {...project}
-      projectUpdated.tasks = [...project.tasks, data.task]
-      setProject(projectUpdated)
+      //socket io
+      socket.emit('createTask', data.task)
 
       // close modal
       setModalForm(false)
@@ -473,6 +479,17 @@ const ProjectProvider = ({children}) => {
     setModalSearch(!modalSearch)
   }
 
+  // Socket.io
+
+  const submitProjectTask = task => {
+
+    // Updating the project in the projects array
+    const projectUpdated = {...project}
+    projectUpdated.tasks = [...projectUpdated.tasks, task]
+    setProject(projectUpdated)
+
+  }
+
 
   return (
     <ProjectContext.Provider
@@ -487,6 +504,7 @@ const ProjectProvider = ({children}) => {
         colaborator,
         modalDeleteColaborator,
         modalSearch,
+        submitProjectTask,
         handleSatatus,
         handleModalSearch,
         deleteColaborator,
