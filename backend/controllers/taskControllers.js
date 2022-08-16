@@ -10,11 +10,11 @@ const addTask = async (req, res) => {
   try{
     const taskExists = await task.add(userTask, userId);
 
-    if(taskExists){
-      return res.status(200).json({msg: 'Task added', task: taskExists});
+    if(!taskExists.data){
+      return res.status(400).json(taskExists);
     }
 
-    return res.status(400).json({msg: 'you are not owner of this project or project does not exist'});
+    return res.status(200).json(taskExists);
   } catch(err){
     console.log(err);
   }
@@ -25,12 +25,16 @@ const addTask = async (req, res) => {
 const getTask = async (req, res) => {
   const userId = req.user._id;
   const taskId = req.params.id;
+
   try {
     const taskExist = await task.get(taskId, userId);
-    if(taskExist){
-      return res.status(200).json({msg: 'Task found', task: taskExist});
-      }
-      return res.status(400).json({msg: 'you are not owner of this project or project does not exist'});
+
+    if(!taskExist.data){
+      return res.status(400).json(taskExist);
+    }
+
+    return res.status(200).json(taskExist);
+
   } catch (error) {
     console.log(error);
   }
@@ -44,15 +48,20 @@ const updateTask = async (req, res) => {
   try {
     // Check if task exist and if user is owner
     const taskExist = await task.get(taskId, userId);
+
     if(taskExist){
       // Update task
       const taskUpdated = await task.update(taskId, taskData);
-      if(taskUpdated){
-        return res.status(200).json({msg: 'Task updated', task: taskUpdated});
+
+      if(!taskUpdated.data){
+        return res.status(400).json(taskUpdated);
       }
-      return res.status(400).json({msg: 'Task not updated'});
+
+      return res.status(200).json(taskUpdated);
     }
-    return res.status(400).json({msg: 'you are not owner of this project or project does not exist'});
+
+    return res.status(400).json(taskExist);
+
   } catch (error) {
     console.log(error);
   }
@@ -65,10 +74,11 @@ const delteTask = async (req, res) => {
   const taskId = req.params.id;
   try {
     const taskDeleted = await task.delete(taskId, userId);
-    if(taskDeleted){
-      return res.status(200).json({msg: 'Task deleted', task: taskDeleted});
+
+    if(!taskDeleted.data){
+      return res.status(400).json();
     }
-    return res.status(400).json({msg: 'you are not owner of this project or project does not exist'});
+    return res.status(200).json(taskDeleted);
   } catch (error) {
     console.log(error);
   }

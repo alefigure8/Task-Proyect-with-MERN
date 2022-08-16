@@ -20,48 +20,61 @@ class Tasks {
         project,
         deliveryDate
       });
+
+      // Save task
       const taskSaved = await task.save();
 
-      // Add task to project
+      // Add task into project
       data.tasks.push(taskSaved._id);
+
+      // Save project
       await data.save();
 
       if(taskSaved){
-        return taskSaved;
+        return {msg: 'Task added', task: taskSaved};
       }
     }
-    return false;
+    return {msg: 'you are not owner of this project or project does not exist', data: false};
   }
 
   async get (taskId, userId){
     const taskExist = await Task.findById({_id: taskId})
       .populate('project')
       .populate('completedBy');
+
     if(taskExist){
       const porjectId = taskExist.project;
       const {data} = await projects.getProject(porjectId, userId);
+
       if(data){
-        return taskExist;
+        return {msg: 'Task found', task: taskExist};
       }
-      return false;
+
+      return {msg: 'you are not owner of this project or project does not exist', task: false};
     }
+
+    return {msg: 'Task not found', task: false};
   }
 
   async update (taskId, taskData){
     const { name, description, priority, state, deliveryDate} = taskData;
     const taskExist = await Task.findById(taskId);
+
     if(taskExist){
       taskExist.name = name || taskExist.name;
       taskExist.description = description || taskExist.description;
       taskExist.priority = priority || taskExist.priority;
       taskExist.state = state || taskExist.state;
       taskExist.deliveryDate = deliveryDate || taskExist.deliveryDate;
+
       const taskUpdated = await taskExist.save();
+
       if(taskUpdated){
-        return taskUpdated;
+        return {msg: 'Task updated', task: taskUpdated};
       }
     }
-    return false;
+
+    return {msg: 'Task not updated', task: false};
   }
 
   async delete (taskId, userId){
@@ -70,16 +83,16 @@ class Tasks {
 
     if(taskExist && data){
       if(data.createdBy.toString() !== userId.toString()){
-          return false;
+          return {msg: 'you are not owner of this project', data: false};
       }
 
       data.tasks.pull(taskId);
-  
+
       await Promise.allSettled([await data.save(), await Task.deleteOne({_id: taskId})]);
 
-      return true;
+      return {msg: 'Task deleted', task: true};
     }
-    return false;
+    return {msg: 'Project does not exist', data: false};
   }
 
   async changeState (taskId, userId){
