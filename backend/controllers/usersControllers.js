@@ -3,22 +3,27 @@ import User from '../container/usersContainer.js';
 /* Init Class */
 const usuario = new User()
 
-
+ 
 /* register User */
 const registerUser = async (req, res) => {
-
   const duplicateUser = await usuario.searchUserbyMail(req.body);
 
   // Check if user alredy exist
-  if(duplicateUser){
+  if(duplicateUser.data){
     const error = new Error('User is alredy register')
     return res.status(400).json({msg: error.message})
   }
 
   // save user
   try {
-    await usuario.saveUser(req.body);
-    res.json({msg: 'User created successfully'});
+    const userSaved = await usuario.saveUser(req.body);
+
+    if(!userSaved.data){
+      return res.status(404).json(userSaved)
+    }
+
+    return res.status(200).json(userSaved);
+
   } catch (err){
     console.log(`Error: ${err.messagge}`);
   }
@@ -32,9 +37,8 @@ const autenticateUser = async (req, res) => {
   try {
 
     // check if user does not exist
-    if(!userData){
-      const error = new Error('User does not exist')
-      return res.status(404).json({msg: error.message})
+    if(!userData.data){
+      return res.status(404).json(userData)
     }
 
     // check if user is confirmed
@@ -45,11 +49,11 @@ const autenticateUser = async (req, res) => {
 
     // check if password is correct
     const compareData = await usuario.comparePassword(userData, req.body.password);
-    if(compareData){
-      return res.json({msg: 'User autenticated successfully', user: compareData});
+    if(!compareData.user){
+      return res.status(404).json(compareData)
     } else {
-      const error = new Error('Password is incorrect')
-      return res.status(404).json({msg: error.message})
+
+      return res.json(compareData);
     }
 
   } catch (error) {
@@ -63,12 +67,13 @@ const confirmPassword = async (req, res) => {
   const token = req.params.token;
   const userConfirmed =  await usuario.confirmToken(token)
   try {
-    if(userConfirmed){
-      return res.json({msg: 'Your account is confirmed'})
-    } else {
-      const error = new Error('Token is incorrect')
-      return res.status(404).json({msg: error.message})
+
+    if(!userConfirmed.data){
+      return res.status(404).json(userConfirmed)
     }
+
+    return res.status(200).json(userConfirmed)
+
   } catch (err) {
     console.log(`Error: ${err.messagge}`);
   }
@@ -79,13 +84,13 @@ const confirmPassword = async (req, res) => {
 const confirm = async (req, res) => {
   const token = req.params.token;
   const userConfirmed =  await usuario.token(token)
+
   try {
-    if(userConfirmed){
-      return res.json({msg: 'The token is correct'})
-    } else {
-      const error = new Error('Token is incorrect')
-      return res.status(404).json({msg: error.message})
+    if(!userConfirmed.data){
+      return res.status(404).json(userConfirmed)
     }
+
+      return res.json(userConfirmed)
   } catch (err) {
     console.log(`Error: ${err.messagge}`);
   }
@@ -97,20 +102,19 @@ const forgotPassword = async (req, res) => {
   const {email} = req.body;
   const user = await usuario.searchUserbyMail({email});
 
-  if(!user){
-    const error = new Error('User does not exist')
-    return res.status(404).json({msg: error.message})
+  if(!user.data){
+    return res.status(404).json(user)
   }
 
   try {
     const generateNewToken = await usuario.generateToken(email)
 
-    if(generateNewToken){
-      res.json({msg: 'We have sent you an email with a link to reset your password'});
-    } else {
-      const error = new Error('Error generating token')
-      return res.status(404).json({msg: error.message})
+    if(!generateNewToken.data){
+      return res.status(404).json( )
     }
+
+    return res.json(generateNewToken);
+
   } catch (error) {
     console.log(`Error: ${error.messagge}`);
   }
@@ -124,12 +128,12 @@ const resetPassword = async (req, res) => {
     const {password} = req.body;
     const newPasswordGenerated = await usuario.resetPassword({token, password});
 
-    if(newPasswordGenerated){
-      res.json({msg: 'Your password has been changed successfully'});
-    } else {
-      const error = new Error('Token is incorrect')
-      return res.status(404).json({msg: error.message})
+    if(!newPasswordGenerated.data){
+      return res.status(404).json(newPasswordGenerated)
     }
+
+    return res.json(newPasswordGenerated);
+
   } catch (error) {
     console.log(`Error: ${error.messagge}`);
   }
