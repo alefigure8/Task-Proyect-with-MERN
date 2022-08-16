@@ -7,28 +7,26 @@ const project = new Projects();
 const allProject = async (req, res) => {
   const userId = req.user._id;
   const projectByUser = await project.getProjectByUser(userId)
-  if(projectByUser){
-    return res.json({
-      msg: 'Projects found',
-      data: projectByUser
-    });
+
+  if(!projectByUser.data){
+    return res.status(400).json(projectByUser);
   }
-  return res.status(400).json({ msg: 'Error finding projects' });
+
+  return res.status(200).json(projectByUser);
 }
 
 // Create a new project
 const newProject = async (req, res) => {
   const projectData = req.body;
   const userId = req.user._id;
+
   try {
     const newProject = await project.save(projectData, userId);
-    if(newProject){
-      return res.json({
-        msg: 'Project created',
-        data: newProject
-      });
+    if(!newProject.data){
+      return res.status(400).json(newProject);
     }
-    return res.status(400).json({ msg: 'Error creating project' });
+
+    return res.status(200).json(newProject);
   } catch (error) {
     console.log(error);
   }
@@ -43,11 +41,12 @@ const getProject = async (req, res) => {
 
     const projectById = await project.getProject(projectId, userId);
 
-    if(projectById.data){
-      return res.status(200).json(projectById);
+    if(!projectById.data){
+      return res.status(400).json(projectById);
     }
 
-    return res.status(400).json(projectById);
+    return res.status(200).json(projectById);
+
   } catch (error) {
     console.log(error);
   }
@@ -57,16 +56,15 @@ const editProject = async (req, res) => {
   const userId = req.user._id;
   const projectData = req.body;
   const projectId = req.params.id;
-  try {
 
+  try {
     const projectEdited = await project.update(projectId, projectData, userId);
-    if(projectEdited){
-      return res.json({
-        msg: 'Project updated',
-        data: projectEdited
-      });
+
+    if(!projectEdited.data){
+      return res.status(400).json(projectEdited);
     }
-    return res.status(400).json({ msg: 'Error updating project' });
+
+    return res.satus(200).json(projectEdited);
 
   } catch (error) {
     console.log(error);
@@ -76,33 +74,30 @@ const editProject = async (req, res) => {
 const deleteProject = async (req, res) => {
   const userId = req.user._id;
   const projectId = req.params.id;
+
   try {
     const projectDeleted = await project.delete(projectId, userId);
-    if(projectDeleted){
-      return res.json({
-        msg: 'Project deleted',
-        data: projectDeleted
-      });
+    if(!projectDeleted.data){
+      return res.status(400).json();
     }
-    return res.status(400).json({ msg: 'Error deleting project' });
+    return res.json(projectDeleted);
+
   } catch (error) {
     console.log(error);
   }
-
 }
 
 // Search colaborator by email
 const searchColaborator = async (req, res) => {
   const email = req.body;
+
   try {
     const colaborator = await project.searchColaborator(email);
-    if(colaborator){
-      return res.json({
-        msg: 'Colaborator found',
-        data: colaborator
-      });
+    if(!colaborator.data){
+      return res.status(400).json(colaborator);
     }
-    return res.status(400).json({ msg: 'Error finding colaborator' });
+    return res.json(colaborator);
+
   } catch (error) {
     console.log(error);
   }

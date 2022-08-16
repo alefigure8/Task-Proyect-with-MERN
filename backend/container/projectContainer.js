@@ -2,14 +2,20 @@ import Project from '../models/projects.js';
 import Usuario from '../models/Usuario.js';
 
 class Projects {
+
   async save(projectData, userId) {
     const project = new Project(projectData);
     project.createdBy = userId;
     const projectSaved = await project.save();
-    if(project){
-      return projectSaved;
+
+    if(!project){
+      return { msg: 'Error creating project', data: false };
     }
-    return false;
+
+    return {
+      msg: 'Project created',
+      data: projectSaved
+    };
   }
 
   async getProject(projectId, userId) {
@@ -44,9 +50,12 @@ class Projects {
       .select('-tasks');
 
     if(project){
-      return project;
+      return {
+        msg: 'Projects found',
+        data: project
+      };
     }
-    return false;
+    return { msg: 'Error finding projects', data: false };
   }
 
   async update(projectId, projectData, userId) {
@@ -58,26 +67,35 @@ class Projects {
       data.startDate = projectData.startDate || data.startDate;
       const projectUpdated = await data.save();
 
-      return projectUpdated;
+      return {
+        msg: 'Project updated',
+        data: projectUpdated
+      };
     }
-    return false
+    return { msg: 'Error updating project', data: false };
   }
 
   async delete(projectId, userId) {
     const {data} = await this.getProject(projectId, userId);
     if(data){
       const projectDeleted = await data.remove();
-      return projectDeleted;
+      return {
+        msg: 'Project deleted',
+        data: projectDeleted
+      };
     }
-    return false
+    return { msg: 'Error deleting project', data: false };
   }
 
   async searchColaborator({email}) {
     const user = await Usuario.findOne({email}).select(['-password', '-__v', '-createdAt', '-updatedAt', '-token', '-confirm']);
     if(user){
-      return user;
+      return {
+        msg: 'Colaborator found',
+        data: user
+      };
     }
-    return false;
+    return { msg: 'Error finding colaborator', data: false };
   }
 
   async addColaborator(userId, projectId, email) {
